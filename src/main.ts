@@ -1,6 +1,8 @@
 // server.js ou server.ts
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerOptions } from './config/swagger';
 
 //Rotas
 import { workerRoutes } from './interfaces/routes/worker.routes';
@@ -18,3 +20,6 @@ app.use(cors());
 // }));
 app.use(express.json());
 app.use('/api', workerRoutes);
+
+// Swagger disponível em /docs
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerOptions));
