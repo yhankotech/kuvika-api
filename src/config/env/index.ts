@@ -1,16 +1,20 @@
-import 'dotenv/config'
-import { z } from 'zod'
+import 'dotenv/config';
+import { z } from 'zod';
+import { BadError } from '../../shared/errors/error';
+
 
 const schemaEnv = z.object({
-  PORT: z.coerce.number().default(3000),
+    NODE_ENV: z.enum(['dev', 'test', 'production']).default('dev'),
+    JWT_SECRET: z.string(),
+    PORT: z.coerce.number().default(4000)
 })
 
 const _env = schemaEnv.safeParse(process.env)
 
-if (_env.success == false) {
-  console.error('Variáveis de ambiente inválida❌', _env.error.format())
+if (_env.success == false){
+    console.error('Variáveis de ambiente inválida', _env.error.format())
 
-  throw new Error('Variáveis de ambiente inválida❌')
+    throw new BadError('Variáveis de ambiente inválida')
 }
 
 export const env = _env.data
