@@ -6,10 +6,26 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+ /*
+ npx prisma generate
+npx prisma migrate dev --name create_worker_table
+
+ */
+// schema.prisma
+model Worker {
+  id              String   @id @default(uuid())
+  fullName        String
+  email           String   @unique
+  password        String
+  phoneNumber     String
+  serviceTypes    String[] // lista de serviços
+  location        String
+  availability    String   // JSON ou texto com horários/dias
+  createdAt       DateTime @default(now())
 }
