@@ -69,3 +69,7 @@ src/
 ├── server/                  # O servidor que roda aplicação
 │
 └── main.ts                  # Ponto de entrada da aplicação
+
+### **4. Docuementação da api no swagger**
+
+http://localhost:4000/docs
