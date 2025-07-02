@@ -4,8 +4,10 @@ import { WorkerRepository } from '../../domain/repositories/workRepository';
 import { Worker } from '../../domain/entities/worker';
 
 export class PrismaWorkerRepository implements WorkerRepository {
+  private connect = prisma;
+
   async create(worker: Worker): Promise<void> {
-    await prisma.worker.create({
+    await this.connect.worker.create({
       data: {
         id: worker.id,
         fullName: worker.fullName,
@@ -21,7 +23,7 @@ export class PrismaWorkerRepository implements WorkerRepository {
   }
 
   async findByEmail(email: string): Promise<Worker | null> {
-    const data = await prisma.worker.findUnique({ where: { email } });
+    const data = await this.connect.worker.findUnique({ where: { email } });
     if (!data) return null;
 
     return new Worker(
@@ -35,5 +37,41 @@ export class PrismaWorkerRepository implements WorkerRepository {
       data.availability,
       data.createdAt
     );
+  }
+
+  async getAllWorker(): Promise<Worker[] | null> {
+      const data = await this.connect.worker.findMany()
+      if (!data) return null;
+
+      return data
+  }
+
+  async update(id: string, data: Worker): Promise<Worker | null> {
+      const work = await this.connect.worker.update({
+        where: {id},
+        data
+      });
+
+      if (!work) return null;
+
+      return work
+  }
+
+  async delete(id: string): Promise<void> {
+      await this.connect.worker.delete({
+        where: { id }
+      });
+  }
+
+  async getById(id: string): Promise<Worker | null> {
+      const workById = await this.connect.worker.findUnique({
+        where: {
+          id
+        }
+      })
+
+      if(!workById)return null;
+
+      return workById
   }
 }
