@@ -47,7 +47,7 @@ export class ClientService {
     const client = ClientMapper.toDomain(dto, hashedPassword);
 
     const code = Math.floor(Math.random() * 100000);
-    await sendEmail(client.email, "cadastro",  client.fullName, code);
+    sendEmail(client.email, "cadastro",  client.fullName, code);
 
     await this.clientRepository.create(client);
   }

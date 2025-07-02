@@ -7,7 +7,7 @@ const worker = new WorkerController();
 
 /**
  * @swagger
- * /login:
+ * /workers/login:
  *   post:
  *     summary: Login do trabalhador
  *     tags: -Trabalhador
@@ -83,7 +83,7 @@ const worker = new WorkerController();
                     type: string
                     example: Credenciais inválidas
  */
-workerRoutes.post('/login', (request: Request, response: Response) => {
+workerRoutes.post('/workers/login', (request: Request, response: Response) => {
   worker.login(request, response,);
 });
 
