@@ -9,6 +9,6 @@ export class Worker {
     public serviceTypes: string[],
     public location: string,
     public availability: string,
-    public createdAt: Date
+    public readonly createdAt: Date
   ) {}
 }

@@ -18,9 +18,3 @@ export class ResourceNotFoundError extends Error {
         super('Recurso não encontrado❌')
     }
 }
-
-export class IvalidAcessInAcademy extends Error {
-    constructor(){
-        super("❌ Muito distante para acessar à academia")
-    }
-} 

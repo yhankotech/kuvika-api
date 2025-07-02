@@ -33,7 +33,7 @@ export class WorkerService {
     const worker = WorkerMapper.toDomain(dto, hashedPassword);
 
     const code = Math.floor(Math.random() * 100000);
-    await sendEmail(worker.email, "cadastro",  worker.fullName, code);
+    sendEmail(worker.email, "cadastro",  worker.fullName, code);
 
     await this.workerRepository.create(worker);
   }

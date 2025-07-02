@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   makeWorker
 } from '../factory/workerFactory';
+import { BadError, EmailAlreadyExist, ResourceNotFoundError } from '../../shared/errors/error';
 
 const createWorkerBodySchema = z.object({
   fullName: z.string().min(3, 'Nome muito curto'),
@@ -44,12 +45,13 @@ export class WorkerController {
       const result = await service.execute(data);
 
       return res.status(202).json(result);
-    } catch (error: any) {
+    } catch (error) {
+
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: 'Erro de validação', details: error.errors });
       }
 
-      return res.status(401).json({ error: error.message });
+      throw new BadError("Alguma coisa deu errado na nossa parte!")
     }
   }
 
@@ -61,26 +63,32 @@ export class WorkerController {
       await service.create(body);
 
       return response.status(201).json({ message: 'Trabalhador criado com sucesso' });
-    } catch (error: any) {
+    } catch (error) {
+
       if (error instanceof z.ZodError) {
         return response.status(400).json({
           error: 'Erro de validação',
           details: error.errors
         });
       }
+      
+      if(error instanceof EmailAlreadyExist){
+        return response.status(409).json({ error: "E-mail já cadastrado!" });
+      }
+      
+      throw new BadError("Alguma coisa deu errado na nossa parte!")
 
-      return response.status(400).json({ error: error.message });
     }
   }
 
-  async getAll(request: Request, response: Response) {
+  async getAll(_: Request, response: Response) {
     try {
       const service = makeWorker();
       const workers = await service.getAll();
 
       return response.status(200).json(workers);
-    } catch (error: any) {
-      return response.status(400).json({ error: error.message });
+    } catch (error) {
+      return response.status(400).json({ error: "Alguma coisa aconteceu na nossa parte!" });
     }
   }
 
@@ -91,13 +99,14 @@ export class WorkerController {
       const service = makeWorker();
       const worker = await service.getById(id);
 
-      if (!worker) {
-        return response.status(404).json({ error: 'Trabalhador não encontrado' });
-      }
-
       return response.status(200).json(worker);
-    } catch (error: any) {
-      return response.status(400).json({ error: error.message });
+
+    } catch (error) {
+        if(error instanceof ResourceNotFoundError){
+          return response.status(404).json({message:" Cliente não encontrado"});
+        }
+      
+        throw new BadError("Alguma coisa deu errado na nossa parte!")
     }
   }
 
@@ -109,12 +118,8 @@ export class WorkerController {
       const service = makeWorker();
       const updated = await service.update(id, body);
 
-      if (!updated) {
-        return response.status(404).json({ error: 'Trabalhador não encontrado para atualização' });
-      }
-
       return response.status(200).json({ message: 'Trabalhador atualizado com sucesso', updated });
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof z.ZodError) {
         return response.status(400).json({
           error: 'Erro de validação',
@@ -122,7 +127,7 @@ export class WorkerController {
         });
       }
 
-      return response.status(400).json({ error: error.message });
+      throw new BadError("Alguma coisa deu errado na nossa parte!")
     }
   }
 
@@ -133,9 +138,13 @@ export class WorkerController {
       const service = makeWorker();
       await service.delete(id);
 
-      return response.status(200).json({ message: 'Trabalhador deletado com sucesso' });
-    } catch (error: any) {
-      return response.status(400).json({ error: error.message });
+      return response.status(204).json({ message: 'Trabalhador deletado com sucesso' });
+    } catch (error) {
+        if(error instanceof ResourceNotFoundError){
+        return response.status(404).json({message:" Cliente não encontrado"});
+      }
+
+      throw new BadError("Alguma coisa deu errado na nossa parte!")
     }
   }
 }
