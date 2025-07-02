@@ -23,7 +23,7 @@ const sendEmail = (to: string, subject:string, fullName: string, code: number) =
              <b> Whatsapp:+244943558106</b>
              </p> 
          `
-             res = send(to,"Redifinir palavra-passe",link)
+             res = send(to,"Cadastomento na plataforma",link)
            return res
         break;
         case "candidatura":
