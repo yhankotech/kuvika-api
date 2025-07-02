@@ -1,16 +1,15 @@
-// src/http/routes/workerRoutes.ts
-import { Router, Request, Response, } from 'express';
-import { WorkerController } from '../controllers/workerController';
+import { Router, Request, Response } from 'express';
+import { ClientController } from '../controllers/clientController';
 
-const workerRoutes = Router();
-const worker = new WorkerController();
+const clientRoutes = Router();
+const client = new ClientController();
 
 /**
  * @swagger
  * /login:
  *   post:
- *     summary: Login do trabalhador
- *     tags: -Trabalhador
+ *     summary: Autenticação do Cliente
+ *     tags: -Cliente
  *     description: Realiza login do cliente com e-mail e senha, retornando um token JWT.
       requestBody:
         required: true
@@ -83,127 +82,119 @@ const worker = new WorkerController();
                     type: string
                     example: Credenciais inválidas
  */
-workerRoutes.post('/login', (request: Request, response: Response) => {
-  worker.login(request, response,);
-});
 
+clientRoutes.post('/clients/login', (req: Request, res: Response) => {
+  client.login(req, res);
+});
 
 /**
  * @swagger
  * tags:
- *   name: Workers
- *   description: Endpoints relacionados aos trabalhadores
+ *   name: Clients
+ *   description: Operations related to clients
+ */
 
- * /workers:
+/**
+ * @swagger
+ * /clients:
  *   post:
- *     summary: Cria um novo trabalhador
- *     tags: [Workers]
+ *     summary: Create a new client
+ *     tags: [Clients]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - fullName
- *               - email
- *               - password
- *               - phoneNumber
- *               - serviceTypes
- *               - location
- *               - availability
  *             properties:
  *               fullName:
  *                 type: string
- *                 example: João Silva
  *               email:
  *                 type: string
- *                 example: joao@example.com
  *               password:
  *                 type: string
- *                 example: senha123
- *               phoneNumber:
+ *               phone:
  *                 type: string
- *                 example: '912345678'
- *               serviceTypes:
- *                 type: array
- *                 items:
- *                   type: string
- *                 example: [ "eletricidade", "pintura" ]
  *               location:
  *                 type: string
- *                 example: Luanda - Viana
- *               availability:
- *                 type: string
- *                 example: Seg a Sex, das 08h às 17h
  *     responses:
  *       201:
- *         description: Trabalhador criado com sucesso
- *       400:
- *         description: Requisição inválida
+ *         description: Client created successfully
  */
-
-
-// Passa como callback anônimo para manter tipagem correta
-workerRoutes.post('/workers', (request: Request, response: Response) => {
-  worker.create(request, response,);
+clientRoutes.post('/clients', (request: Request, response: Response) => {
+  client.create(request, response,);
 });
-
 
 /**
  * @swagger
- * /workers:
+ * /clients:
  *   get:
- *     summary: Retorna todos os trabalhadores
- *     tags: [Workers]
+ *     summary: Get all clients
+ *     tags: [Clients]
  *     responses:
  *       200:
- *         description: Lista de trabalhadores retornada com sucesso
- *       400:
- *         description: Erro ao buscar trabalhadores
+ *         description: List of all clients
  */
-workerRoutes.get('/workers', (req: Request, res: Response) => {
-  worker.getAll(req, res);
+clientRoutes.get('/clients', (request: Request, response: Response) => {
+  client.getAll(request, response,);
 });
 
 /**
  * @swagger
- * /workers/{id}:
+ * /clients/{id}:
  *   get:
- *     summary: Retorna um trabalhador por ID
- *     tags: [Workers]
+ *     summary: Get a client by ID
+ *     tags: [Clients]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do trabalhador
  *     responses:
  *       200:
- *         description: Trabalhador encontrado
+ *         description: Client found
  *       404:
- *         description: Trabalhador não encontrado
- *       400:
- *         description: Erro na requisição
+ *         description: Client not found
  */
-workerRoutes.get('/workers/:id', (req: Request, res: Response) => {
-  worker.getById(req, res);
+clientRoutes.get('/clients/:id', (request: Request, response: Response) => {
+  client.getById(request, response,);
 });
 
 /**
  * @swagger
- * /workers/{id}:
+ * /clients/email/{email}:
+ *   get:
+ *     summary: Get a client by email
+ *     tags: [Clients]
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Client found
+ *       404:
+ *         description: Client not found
+ */
+clientRoutes.get('/clients/email/:email', (request: Request, response: Response) => {
+  client.getByEmail(request, response,);
+});
+
+/**
+ * @swagger
+ * /clients/{id}:
  *   put:
- *     summary: Atualiza um trabalhador existente
- *     tags: [Workers]
+ *     summary: Update a client
+ *     tags: [Clients]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do trabalhador a ser atualizado
  *     requestBody:
  *       required: true
  *       content:
@@ -217,49 +208,36 @@ workerRoutes.get('/workers/:id', (req: Request, res: Response) => {
  *                 type: string
  *               password:
  *                 type: string
- *               phoneNumber:
+ *               phone:
  *                 type: string
- *               serviceTypes:
- *                 type: array
- *                 items:
- *                   type: string
  *               location:
  *                 type: string
- *               availability:
- *                 type: string
  *     responses:
- *       202:
- *         description: Trabalhador atualizado com sucesso
- *       400:
- *         description: Erro de validação ou atualização
- *       404:
- *         description: Trabalhador não encontrado
+ *       200:
+ *         description: Client updated
  */
-workerRoutes.put('/workers/:id', (req: Request, res: Response) => {
-  worker.update(req, res);
+clientRoutes.put('/clients/:id', (request: Request, response: Response) => {
+  client.update(request, response,);
 });
 
 /**
  * @swagger
- * /workers/{id}:
+ * /clients/{id}:
  *   delete:
- *     summary: Deleta um trabalhador
- *     tags: [Workers]
+ *     summary: Delete a client
+ *     tags: [Clients]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: ID do trabalhador
  *     responses:
- *       202:
- *         description: Trabalhador deletado com sucesso
- *       400:
- *         description: Erro na requisição
+ *       204:
+ *         description: Client deleted
  */
-workerRoutes.delete('/workers/:id', (req: Request, res: Response) => {
-  worker.delete(req, res);
+clientRoutes.delete('/clients/:id', (request: Request, response: Response) => {
+  client.delete(request, response,);
 });
 
-export { workerRoutes };
+export { clientRoutes };

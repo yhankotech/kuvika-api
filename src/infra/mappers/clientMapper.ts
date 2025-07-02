@@ -1,0 +1,67 @@
+// src/infra/mappers/clientMapper.ts
+
+import { Client } from '../../domain/entities/client';
+import {
+  CreateClientDTO,
+  UpdateClientDTO,
+  ReturnClientDTO
+} from '../../interfaces/dtos/clientDto';
+import { randomUUID } from 'crypto';
+
+export class ClientMapper {
+  static toDomain(dto: CreateClientDTO, hashedPassword: string): Client {
+    return new Client(
+      randomUUID(),  
+      dto.fullName,
+      dto.email,   
+      hashedPassword,
+      dto.location,
+      dto.phone
+)
+  }
+
+  static toDomainForUpdate(id: string, dto: UpdateClientDTO, existing: Client): Client {
+    return {
+      id,
+      fullName: dto.fullName ?? existing.fullName,
+      email: dto.email ?? existing.email,
+      password: dto.password ?? existing.password,
+      phone: dto.phone ?? existing.phone,
+      location: dto.location ?? existing.location,
+      createdAt: existing.createdAt,
+    };
+  }
+
+  static toReturnDTO(client: Client): ReturnClientDTO {
+    return {
+      id: client.id!,
+      fullName: client.fullName,
+      email: client.email,
+      phone: client.phone,
+      location: client.location,
+      createdAt: client.createdAt!,
+    };
+  }
+
+  static toPersistence(client: Client): any {
+    return {
+      fullName: client.fullName,
+      email: client.email,
+      password: client.password,
+      phone: client.phone,
+      location: client.location,
+    };
+  }
+
+  static toHttp(client: Client) {
+    return {
+      id: client.id,
+      fullName: client.fullName,
+      email: client.email,
+      phone: client.phone,
+      location: client.location,
+      createdAt: client.createdAt,
+      updatedAt: client.updatedAt
+    };
+  }
+}
