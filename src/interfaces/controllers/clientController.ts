@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { makeClientService } from '../factory/clientFactory';
-import { BadError, EmailAlreadyExist, ResourceNotFoundError } from '../../shared/errors/error';
+import { BadError, EmailAlreadyExist, InvalidCredentials, ResourceNotFoundError } from '../../shared/errors/error';
+import { env } from '../../config/env';
+import jwt from 'jsonwebtoken';
 
 const createClientSchema = z.object({
   fullName: z.string().min(3, 'Nome muito curto'),
@@ -50,8 +52,41 @@ export class ClientController {
         return res.status(400).json({ error: 'Erro de validação', details: error.errors });
       }
 
-      return res.status(401).json({ error: "E-mail ou senha inválida" });
+      if(error instanceof InvalidCredentials){
+         return res.status(401).json({ error: "E-mail ou senha inválida" });;
+      }
+
+      if(error instanceof BadError){
+        return res.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
+      }
+
     }
+  }
+
+  async logout(req: Request, res: Response): Promise<Response> {
+    const token = req.cookies.token
+
+     if (token) {
+      try {
+        const payload = jwt.verify(token, env.JWT_SECRET!) as { sub: string, role: string }
+
+        // Aqui você poderia passar o ID do usuário para o serviço
+        const logoutService = makeClientService();
+        await logoutService.getById({ id: payload.sub })
+
+      } catch (error) {
+        return res.status(400).json('Token inválido ao tentar fazer logout.')
+      }
+    }
+
+    // Limpar o cookie
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    })
+
+    return res.status(200).json({ message: 'Logout realizado com sucesso.' })
   }
 
   async create(request: Request, response: Response) {
@@ -72,7 +107,9 @@ export class ClientController {
         return response.status(409).json({ error: "E-mail já cadastrado!" });
       }
 
-      throw new BadError("Alguma coisa deu errado na nossa parte!")
+      if(error instanceof BadError){
+        return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
+      }
     }
   }
 
@@ -83,6 +120,7 @@ export class ClientController {
 
       return response.status(200).json(clients);
     } catch (error) {
+      
       return response.status(400).json({ error: "Alguma coisa aconteceu na nossa parte!" });
     }
   }
@@ -102,7 +140,9 @@ export class ClientController {
         return response.status(404).json({message:" Cliente não encontrado"});
       }
 
-      throw new BadError("Alguma coisa deu errado na nossa parte!")
+      if(error instanceof BadError){
+        return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
+      }
     }
   }
 
@@ -122,7 +162,9 @@ export class ClientController {
         return response.status(404).json({message:" Cliente não encontrado"});
       }
 
-      throw new BadError("Alguma coisa deu errado na nossa parte!")
+      if(error instanceof BadError){
+        return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
+      }
     }
   }
 
@@ -143,7 +185,10 @@ export class ClientController {
         return response.status(400).json({ error: 'Erro de validação', details: error.errors });
       }
 
-      throw new BadError("Alguma coisa deu errado na nossa parte!")
+      if(error instanceof ResourceNotFoundError){
+        return response.status(404).json({message:" Cliente não encontrado"});
+      }
+  
     }
   }
 
@@ -155,7 +200,7 @@ export class ClientController {
 
       await service.delete({id});
 
-      return response.status(204).json({ message: 'Cliente deletado com sucesso' });
+      return response.status(200).json({ message: 'Cliente deletado com sucesso' });
 
     } catch (error) {
       
@@ -163,8 +208,30 @@ export class ClientController {
         return response.status(404).json({message:" Cliente não encontrado"});
       }
 
-      throw new BadError("Alguma coisa deu errado na nossa parte!")
+      if(error instanceof BadError){
+        return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
+      }
       
     }
   }
+
+  async profile(req: Request, res: Response): Promise<Response> {
+    try {
+          const userId = req.user?.id;
+          const role = req.user?.role;
+      
+          if (!userId || !role) {
+             return res.status(401).json({ message: 'Não autenticado' });
+          }
+        
+          const service = makeClientService();
+          const profile = await service.getProfile(userId, role);
+            
+          return res.json({ profile });
+  
+        } catch (err) {
+  
+          return res.status(404).json({ message: "Perfil não encontrado!" });
+        }
+      }
 }

@@ -1,5 +1,3 @@
-// src/application/services/ClientService.ts
-
 import {
   CreateClientDTO,
   UpdateClientDTO,
@@ -16,6 +14,7 @@ import { hash } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { env } from '../../config/env';
+import { ResourceNotFoundError } from '../../shared/errors/error';
 
 export class ClientService {
   constructor(private readonly clientRepository: ClientRepository) {}
@@ -32,9 +31,17 @@ export class ClientService {
       throw new Error('Credenciais inválidas');
     }
 
-    const token = jwt.sign({ sub: client.id }, env.JWT_SECRET, {
-      expiresIn: '7d'
-    });
+    const token = jwt.sign(
+      {
+        id: client.id,
+        role: 'client' as const
+      },
+      env.JWT_SECRET,
+      {
+        expiresIn: '7d',
+        subject: client.id 
+      }
+    );
 
     return {
       token,
@@ -95,5 +102,16 @@ export class ClientService {
 
   async delete(dto: DeleteClientDTO): Promise<void> {
     await this.clientRepository.delete(dto.id);
+  }
+
+  async getProfile(userId: string, role: "client" | "worker") {
+    const user = await this.clientRepository.getById(userId);
+
+    if(!user) return new ResourceNotFoundError()
+    
+      if (role === 'client') {
+      
+      return await this.clientRepository.getProfile(userId)
+    }
   }
 }

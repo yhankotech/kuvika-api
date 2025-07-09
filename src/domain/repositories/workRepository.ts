@@ -1,5 +1,5 @@
-// src/domain/repositories/WorkerRepository.ts
-import { Worker } from '../entities/worker';
+import { Worker,  WorkerSearch} from '../entities/worker';
+import { SearchWorkersDTO } from "../../interfaces/dtos/workerDto";
 
 export interface WorkerRepository {
   create(worker: Worker): Promise<void>;
@@ -8,4 +8,6 @@ export interface WorkerRepository {
   update(id:string, data:Worker): Promise<Worker | null>;
   delete(id: string): Promise<void>;
   getById(id: string): Promise<Worker | null>;
+  getProfile (id: string): Promise<Worker>
+  searchWorkers(filters: SearchWorkersDTO): Promise<WorkerSearch[]>;
 }

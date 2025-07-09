@@ -1,9 +1,16 @@
-// src/http/routes/workerRoutes.ts
 import { Router, Request, Response, } from 'express';
 import { WorkerController } from '../controllers/workerController';
+import { ensureAuthenticated } from '../../shared/middleware/authenticate';
 
 const workerRoutes = Router();
 const worker = new WorkerController();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Trabalhador
+ *   description: Gerenciamento de trabalhadores
+ */
 
 /**
  * @swagger
@@ -86,6 +93,23 @@ const worker = new WorkerController();
 workerRoutes.post('/workers/login', (request: Request, response: Response) => {
   worker.login(request, response,);
 });
+
+/**
+ * @swagger
+ * /workers/logout:
+ *   post:
+ *     summary: Realiza o logout do usuário
+ *     tags:
+ *       - Autenticação
+ *     description: Remove o cookie com o token JWT e encerra a sessão do usuário autenticado (trabalhador).
+ *     responses:
+ *       200:
+ *         description: Logout realizado com sucesso.
+ *       401:
+ *         description: Token inválido ou inexistente.
+ */
+workerRoutes.post('/workers/logout', (req: Request, res: Response) => {
+  worker.logout(req, res);})
 
 
 /**
@@ -261,5 +285,31 @@ workerRoutes.put('/workers/:id', (req: Request, res: Response) => {
 workerRoutes.delete('/workers/:id', (req: Request, res: Response) => {
   worker.delete(req, res);
 });
+
+/**
+ * @swagger
+ * /profile:
+ *   get:
+ *     summary: Retorna o perfil do usuário autenticado
+ *     tags: [Perfil]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Perfil retornado com sucesso
+ *       401:
+ *         description: Não autenticado
+ *       404:
+ *         description: Usuário não encontrado
+ */
+
+workerRoutes.get('/workers/me', ensureAuthenticated, (req: Request, res: Response) => {
+  worker.profile(req, res);
+});
+
+workerRoutes.get('/search', async (req: Request, res: Response) => {
+  worker.search(req, res);
+});
+
 
 export { workerRoutes };

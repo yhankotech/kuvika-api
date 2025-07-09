@@ -1,5 +1,4 @@
-// src/application/services/CreateWorkerService.ts
-import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO, LoginDTO } from '../../interfaces/dtos/workerDto';
+import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO, LoginDTO, SearchWorkersDTO } from '../../interfaces/dtos/workerDto';
 import { WorkerRepository } from '../../domain/repositories/workRepository';
 import { WorkerMapper } from '../../infra/mappers/workerMapper';
 import  { hash } from 'bcryptjs';
@@ -7,24 +6,39 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { InvalidCredentials, ResourceNotFoundError } from '../../shared/errors/error';
 import {  sendEmail } from "../../adapter/email/sendEmail";
+import { env } from '../../config/env';
+import { RatingRepository } from "../../domain/repositories/ratingRepository"
 
 export class WorkerService {
-  constructor(private readonly workerRepository: WorkerRepository) {}
+  constructor(
+    private readonly workerRepository: WorkerRepository,
+    private ratingRepository: RatingRepository
+  ) {}
 
   async execute({ email, password }: LoginDTO) {
-    const user = await this.workerRepository.findByEmail(email);
+    const worker = await this.workerRepository.findByEmail(email);
 
-    if (!user) throw new ResourceNotFoundError();
+    if (!worker) throw new ResourceNotFoundError();
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(password, worker.password);
     
     if (!passwordMatch) throw new InvalidCredentials();
 
-    const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET!, { expiresIn: '1d' });
-
+    const token = jwt.sign(
+      {
+        id: worker.id,
+          role: 'worker' as const
+      },
+      env.JWT_SECRET,
+      {
+        expiresIn: '7d',
+        subject: worker.id 
+      }
+    );
+    
     return {
       token,
-      user: WorkerMapper.toResponse(user)
+      client: WorkerMapper.toReturnDTO(worker)
     };
   }
 
@@ -46,18 +60,20 @@ export class WorkerService {
 
   async getById(id: string): Promise<ReturnWorkerDTO | null> {
     const worker = await this.workerRepository.getById(id);
+
     if (!worker) return null;
+
     return WorkerMapper.toReturnDTO(worker);
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<ReturnWorkerDTO | null> {
     const worker =  await this.workerRepository.findByEmail(email);
 
     if(!worker){
-      new ResourceNotFoundError()
+      throw new ResourceNotFoundError()
     }
 
-    return worker
+    return WorkerMapper.toReturnDTO(worker);
   }
 
   async update(id: string, dto: UpdateWorkerDTO): Promise<ReturnWorkerDTO | null> {
@@ -73,5 +89,24 @@ export class WorkerService {
 
   async delete(id: string): Promise<void> {
     await this.workerRepository.delete(id);
+  }
+
+   async getProfile(userId: string, role: "client" | "worker") {
+    const user = await this.workerRepository.getById(userId);
+
+    if(!user) return new ResourceNotFoundError()
+    
+    if (role ===  'worker') {
+      const averageRating = await this.ratingRepository.getAverageRatingByWorker(userId);
+
+      return {
+        ...user,
+        averageRating,
+      };
+    }
+  }
+
+  async search(filters: SearchWorkersDTO) {
+    return this.workerRepository.searchWorkers(filters);
   }
 }

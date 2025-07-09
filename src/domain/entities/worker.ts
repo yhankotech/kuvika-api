@@ -1,4 +1,4 @@
-// src/domain/entities/Worker.ts
+
 export class Worker {
   constructor(
     public readonly id: string,
@@ -10,5 +10,18 @@ export class Worker {
     public location: string,
     public availability: string,
     public readonly createdAt: Date
+  ) {}
+}
+
+export class WorkerSearch {
+  constructor(
+    public readonly id: string,
+    public readonly fullName: string,
+    public readonly email: string,
+    public readonly phoneNumber: string,
+    public readonly location: string,
+    public readonly serviceTypes: string[],
+    public readonly averageRating: number,
+    public readonly description: string | null,
   ) {}
 }
