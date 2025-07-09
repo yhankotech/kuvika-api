@@ -34,7 +34,7 @@ export interface LoginDTO {
 }
 
 export interface SearchWorkersDTO {
-  location?: string;          // cidade ou bairro
-  serviceType?: string;       // ex: eletricista, pintor
-  minRating?: number;         // ex: 4
+  location?: string;
+  serviceType?: string;
+  minRating?: number;
 }

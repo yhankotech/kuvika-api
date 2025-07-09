@@ -9,7 +9,8 @@ export class Worker {
     public serviceTypes: string[],
     public location: string,
     public availability: string,
-    public readonly createdAt: Date
+    public readonly createdAt: Date,
+    public avatar?: string,
   ) {}
 }
 
@@ -20,6 +21,7 @@ export class WorkerSearch {
     public readonly email: string,
     public readonly phoneNumber: string,
     public readonly location: string,
+    public readonly avatar: string,
     public readonly serviceTypes: string[],
     public readonly averageRating: number,
     public readonly description: string | null,

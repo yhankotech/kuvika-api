@@ -6,7 +6,6 @@ import {
 import { BadError, EmailAlreadyExist, ResourceNotFoundError } from '../../shared/errors/error';
 import { env } from '../../config/env';
 import jwt from 'jsonwebtoken';
-import { SearchWorkersDTO } from "../dtos/workerDto";
 
 const createWorkerBodySchema = z.object({
   fullName: z.string().min(3, 'Nome muito curto'),
@@ -30,7 +29,7 @@ const updateWorkerBodySchema = z.object({
 
 const idSchema = z.object(
   {
-    id: z.string()
+    id: z.string().uuid()
   }
 )
 

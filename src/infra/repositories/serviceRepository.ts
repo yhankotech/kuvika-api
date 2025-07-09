@@ -27,6 +27,7 @@ export class PrismaServiceRequestRepository implements ServiceRequestRepository 
                 fullName: true,
                 serviceTypes: true,
                 availability: true,
+                avatar: true
                 },
             },
             },

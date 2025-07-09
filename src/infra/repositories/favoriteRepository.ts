@@ -20,6 +20,7 @@ export class PrismaFavoriteRepository implements FavoriteRepository {
             fullName: true,
             serviceTypes: true,
             location: true,
+            avatar: true
           },
         },
       },

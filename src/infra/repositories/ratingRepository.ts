@@ -1,4 +1,3 @@
-// src/infra/database/prisma/repositories/PrismaRatingRepository.ts
 import { prisma } from "../database/prisma";
 import { RatingDTO } from "../../interfaces/dtos/ratingDto";
 import { Rating } from "../../domain/entities/rating";

@@ -22,7 +22,7 @@ const updateClientSchema = z.object({
 });
 
 const idSchema = z.object({
-  id: z.string()
+  id: z.string().uuid()
 });
 
 const emailSchema = z.object({

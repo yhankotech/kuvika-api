@@ -35,7 +35,8 @@ export class PrismaWorkerRepository implements WorkerRepository {
       data.serviceTypes,
       data.location,
       data.availability,
-      data.createdAt
+      data.createdAt,
+      data.avatar ?? undefined
     );
   }
 
@@ -43,7 +44,18 @@ export class PrismaWorkerRepository implements WorkerRepository {
       const data = await this.connect.worker.findMany()
       if (!data) return null;
 
-      return data
+      return data.map(worker => new Worker(
+        worker.id,
+        worker.fullName,
+        worker.email,
+        worker.password,
+        worker.phoneNumber,
+        worker.serviceTypes,
+        worker.location,
+        worker.availability,
+        worker.createdAt,
+        worker.avatar ?? undefined
+      ));
   }
 
   async update(id: string, data: Worker): Promise<Worker | null> {
@@ -54,7 +66,18 @@ export class PrismaWorkerRepository implements WorkerRepository {
 
       if (!work) return null;
 
-      return work
+      return new Worker(
+        work.id,
+        work.fullName,
+        work.email,
+        work.password,
+        work.phoneNumber,
+        work.serviceTypes,
+        work.location,
+        work.availability,
+        work.createdAt,
+        work.avatar ?? undefined
+      )
   }
 
   async delete(id: string): Promise<void> {
@@ -72,7 +95,18 @@ export class PrismaWorkerRepository implements WorkerRepository {
 
       if(!workById)return null;
 
-      return workById
+      return new Worker(
+        workById.id,
+        workById.fullName,
+        workById.email,
+        workById.password,
+        workById.phoneNumber,
+        workById.serviceTypes,
+        workById.location,
+        workById.availability,
+        workById.createdAt,
+        workById.avatar ?? undefined
+      );
   }
 
   async getProfile (id: string): Promise<Worker>{
@@ -87,7 +121,8 @@ export class PrismaWorkerRepository implements WorkerRepository {
             createdAt: true,
             availability: true,
             ratingsReceived: true,
-            serviceTypes: true 
+            serviceTypes: true,
+            avatar: true 
       }});
 
       if (!user) {
@@ -98,7 +133,7 @@ export class PrismaWorkerRepository implements WorkerRepository {
         user.id,
         user.fullName,
         user.email,
-        '',
+        user.avatar ?? "",
         user.phoneNumber,
         user.serviceTypes,
         user.location,
@@ -155,9 +190,10 @@ export class PrismaWorkerRepository implements WorkerRepository {
         worker.email,
         worker.phoneNumber,
         worker.location,
-        worker.serviceTypes,
+        Array.isArray(worker.serviceTypes) ? worker.serviceTypes.join(', ') : worker.serviceTypes,
+        [worker.averageRating.toString()],
         worker.averageRating,
-        worker.description,
+        null 
       ));
 
     return result;

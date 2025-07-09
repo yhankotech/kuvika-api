@@ -21,6 +21,8 @@ model Worker {
   phoneNumber     String
   serviceTypes    String[]
   location        String
+  avatar          String?
+  price           Float?
   availability    String
   createdAt       DateTime @default(now())
 
@@ -43,6 +45,7 @@ model Client {
   password  String
   phone     String
   location  String
+  avatar   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
