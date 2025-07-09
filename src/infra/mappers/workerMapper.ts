@@ -1,4 +1,3 @@
-// src/application/mappers/WorkerMapper.ts
 import { Worker } from '../../domain/entities/worker';
 import { randomUUID } from 'crypto';
 import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO } from '../../interfaces/dtos/workerDto';

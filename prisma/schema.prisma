@@ -12,31 +12,106 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
- /*
- npx prisma generate
-npx prisma migrate dev --name create_worker_table
 
- */
-// schema.prisma
 model Worker {
   id              String   @id @default(uuid())
   fullName        String
   email           String   @unique
   password        String
   phoneNumber     String
-  serviceTypes    String[] // lista de serviços
+  serviceTypes    String[]
   location        String
-  availability    String   // JSON ou texto com horários/dias
+  availability    String
   createdAt       DateTime @default(now())
+
+  // Relações
+  serviceRequests ServiceRequest[]        @relation("WorkerRequests")
+  ratingsReceived Rating[]                @relation("WorkerRatings")
+  messages        Message[]               @relation("WorkerMessages")
+
+  // Back relations para mensagens
+  sentMessages     Message[] @relation("WorkerSentMessages")
+  receivedMessages Message[] @relation("WorkerReceivedMessages")
+
+  favoritedBy     Favorite[]   
 }
 
 model Client {
   id        String   @id @default(uuid())
-  fullName String
+  fullName  String
   email     String   @unique
   password  String
   phone     String
   location  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relações
+
+  serviceRequests ServiceRequest[]        @relation("ClientRequests")
+  ratingsGiven    Rating[]                @relation("ClientRatings")
+  messages        Message[]               @relation("ClientMessages")
+
+  // Back relations para mensagens
+  sentMessages     Message[] @relation("ClientSentMessages")
+  receivedMessages Message[] @relation("ClientReceivedMessages")
+
+  favorites        Favorite[] 
+}
+
+model ServiceRequest {
+  id          String   @id @default(uuid())
+  clientId    String
+  workerId    String
+  serviceDate DateTime
+  description String
+  status      String 
+  createdAt   DateTime @default(now())
+
+  client      Client   @relation("ClientRequests", fields: [clientId], references: [id])
+  worker      Worker   @relation("WorkerRequests", fields: [workerId], references: [id])
+}
+
+model Rating {
+  id        String   @id @default(uuid())
+  score     Int     
+  comment   String?
+  clientId  String
+  workerId  String
+  createdAt DateTime @default(now())
+
+  client    Client   @relation("ClientRatings", fields: [clientId], references: [id])
+  worker    Worker   @relation("WorkerRatings", fields: [workerId], references: [id])
+}
+
+model Message {
+  id           String   @id @default(uuid())
+  content      String
+  timestamp    DateTime @default(now())
+  senderId     String
+  recipientId  String
+  isFromClient Boolean
+
+ // Relações
+  senderClient     Client? @relation("ClientSentMessages", fields: [senderId], references: [id], map: "fk_sender_client")
+  senderWorker     Worker? @relation("WorkerSentMessages", fields: [senderId], references: [id], map: "fk_sender_worker")
+  recipientClient  Client? @relation("ClientReceivedMessages", fields: [recipientId], references: [id], map: "fk_recipient_client")
+  recipientWorker  Worker? @relation("WorkerReceivedMessages", fields: [recipientId], references: [id], map: "fk_recipient_worker")
+
+  Client Client[] @relation("ClientMessages")
+
+  Worker Worker[] @relation("WorkerMessages")
+}
+
+
+model Favorite {
+  id        String   @id @default(uuid())
+  clientId  String
+  workerId  String
+  createdAt DateTime @default(now())
+
+  client    Client   @relation(fields: [clientId], references: [id])
+  worker    Worker   @relation(fields: [workerId], references: [id])
+
+  @@unique([clientId, workerId])
 }

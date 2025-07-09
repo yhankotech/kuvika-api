@@ -4,6 +4,9 @@ import {
   makeWorker
 } from '../factory/workerFactory';
 import { BadError, EmailAlreadyExist, ResourceNotFoundError } from '../../shared/errors/error';
+import { env } from '../../config/env';
+import jwt from 'jsonwebtoken';
+import { SearchWorkersDTO } from "../dtos/workerDto";
 
 const createWorkerBodySchema = z.object({
   fullName: z.string().min(3, 'Nome muito curto'),
@@ -31,6 +34,12 @@ const idSchema = z.object(
   }
 )
 
+const searchWorkerSchema = z.object({
+  location: z.string(),
+  serviceType: z.string(),
+  minRating: z.number().int(),
+});
+
 export class WorkerController {
   async login(req: Request, res: Response) {
     try {
@@ -54,6 +63,34 @@ export class WorkerController {
       throw new BadError("Alguma coisa deu errado na nossa parte!")
     }
   }
+
+   async logout(req: Request, res: Response): Promise<Response> {
+      const token = req.cookies.token
+  
+       if (token) {
+        try {
+          const payload = jwt.verify(token, env.JWT_SECRET!) as { sub: string, role: string }
+  
+          console.log(`Usuário com ID ${payload.sub} (${payload.role}) fez logout.`)
+  
+          // Aqui você poderia passar o ID do usuário para o serviço
+          const logoutService = makeWorker();
+          await logoutService.getById(payload.sub)
+  
+        } catch (err) {
+          console.warn('Token inválido ao tentar fazer logout.')
+        }
+      }
+  
+      // Limpar o cookie
+      res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+      })
+  
+      return res.status(200).json({ message: 'Logout realizado com sucesso.' })
+    }
 
   async create(request: Request, response: Response) {
     try {
@@ -141,10 +178,56 @@ export class WorkerController {
       return response.status(204).json({ message: 'Trabalhador deletado com sucesso' });
     } catch (error) {
         if(error instanceof ResourceNotFoundError){
-        return response.status(404).json({message:" Cliente não encontrado"});
-      }
+          return response.status(404).json({message:" Cliente não encontrado"});
+        }
 
-      throw new BadError("Alguma coisa deu errado na nossa parte!")
+        if(error instanceof BadError){
+          return response.status(400).json({message: "Alguma coisa deu errado na nossa parte!"});
+        }
+    }
+  }
+
+  async profile(req: Request, res: Response): Promise<Response> {
+      try {
+          const userId = req.user?.id;
+          const role = req.user?.role;
+    
+          if (!userId || !role) {
+            return res.status(401).json({ message: 'Não autenticado' });
+          }
+      
+          const service = makeWorker();
+          const profile = await service.getProfile(userId, role);
+          
+          return res.json({ profile });
+
+      } catch (err) {
+
+        return res.status(404).json({ message: "Perfil não encontrado!" });
+      }
+    }
+  
+    async search(request: Request, response: Response) {
+    try {
+      const { location, minRating, serviceType } = searchWorkerSchema.parse(request.body)
+      
+      const service = makeWorker();
+
+      const result = await service.search({
+        location, 
+        minRating, 
+        serviceType
+      });
+
+      return response.json(result);
+    } catch (error) {
+        if(error instanceof ResourceNotFoundError){
+            return response.status(404).json({message:" Trabalhador não encontrado"});
+          }
+
+          if(error instanceof BadError){
+            return response.status(400).json({message: "Alguma coisa deu errado na nossa parte!"});
+          }
     }
   }
 }

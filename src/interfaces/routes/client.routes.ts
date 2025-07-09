@@ -1,8 +1,16 @@
 import { Router, Request, Response } from 'express';
 import { ClientController } from '../controllers/clientController';
+import { ensureAuthenticated } from '../../shared/middleware/authenticate';
 
 const clientRoutes = Router();
 const client = new ClientController();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Cliente
+ *   description: Gerenciamento de usuáros do tipo cliente
+ */
 
 /**
  * @swagger
@@ -86,6 +94,23 @@ const client = new ClientController();
 clientRoutes.post('/clients/login', (req: Request, res: Response) => {
   client.login(req, res);
 });
+
+/**
+ * @swagger
+ * /clients/logout:
+ *   post:
+ *     summary: Realiza o logout do usuário
+ *     tags:
+ *       - Autenticação
+ *     description: Remove o cookie com o token JWT e encerra a sessão do usuário autenticado (cliente).
+ *     responses:
+ *       200:
+ *         description: Logout realizado com sucesso.
+ *       401:
+ *         description: Token inválido ou inexistente.
+ */
+clientRoutes.post('/clients/logout', (req: Request, res: Response) => {
+  client.logout(req, res);})
 
 /**
  * @swagger
@@ -238,6 +263,28 @@ clientRoutes.put('/clients/:id', (request: Request, response: Response) => {
  */
 clientRoutes.delete('/clients/:id', (request: Request, response: Response) => {
   client.delete(request, response,);
+});
+
+
+/**
+ * @swagger
+ * /profile/me:
+ *   get:
+ *     summary: Retorna o perfil do usuário autenticado
+ *     tags: [Perfil]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Perfil retornado com sucesso
+ *       401:
+ *         description: Não autenticado
+ *       404:
+ *         description: Usuário não encontrado
+ */
+
+clientRoutes.get('/clients/me', ensureAuthenticated, (req: Request, res: Response) => {
+  client.profile(req, res);
 });
 
 export { clientRoutes };

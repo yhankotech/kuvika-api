@@ -14,7 +14,9 @@ export class PrismaClientRepository implements ClientRepository {
   }
 
   async getById(id: string): Promise<Client | null> {
-    return await this.connect.client.findUnique({ where: { id } });
+    return await this.connect.client.findUnique({ 
+      where: { id }
+     });
   }
 
   async getByEmail(email: string): Promise<Client | null> {
@@ -27,5 +29,22 @@ export class PrismaClientRepository implements ClientRepository {
 
   async delete(id: string): Promise<void> {
     await this.connect.client.delete({ where: { id } });
+  }
+
+  async getProfile (id: string): Promise<Client>{
+
+    const user = await this.connect.client.findUnique({ 
+      where: { id },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        location: true,
+        createdAt: true,
+    }});
+
+    return user as Client;
+
   }
 }

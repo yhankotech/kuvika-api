@@ -40,4 +40,3 @@ export interface LoginClientDTO {
   email: string,
   password: string
 };
-

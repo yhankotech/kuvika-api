@@ -1,25 +1,32 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { env } from '../../config/env'; // onde está a JWT_SECRET
+import { env } from '../../config/env';
 
 interface Payload {
-  sub: string;
+  id: string;
+  role: 'client' | 'worker';
 }
 
-export function ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
+export function ensureAuthenticated(req: Request, res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader) return res.status(401).json({ message: 'Token ausente' });
+  if (!authHeader) {
+    res.status(401).json({ message: 'Token ausente' });
+    return;
+  }
 
   const [, token] = authHeader.split(' ');
 
   try {
-    const { sub } = jwt.verify(token, env.JWT_SECRET) as Payload;
+    const decoded = jwt.verify(token, env.JWT_SECRET) as Payload;
 
-    req.userId = sub; // ⛔ isso vai dar erro de tipo se você não estender o tipo `Request`
+    req.user = {
+      id: decoded.id,
+      role: decoded.role
+    };
 
-    return next();
+    next(); // tudo certo, segue
   } catch {
-    return res.status(401).json({ message: 'Token inválido' });
+    res.status(401).json({ message: 'Token inválido' });
   }
 }

@@ -7,4 +7,5 @@ export interface ClientRepository {
   getByEmail(email: string): Promise<Client | null>;
   update(id: string, data: Partial<Client>): Promise<Client | null>;
   delete(id: string): Promise<void>;
+  getProfile (id: string): Promise<Client>
 }

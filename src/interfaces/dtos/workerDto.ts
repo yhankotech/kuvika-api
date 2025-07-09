@@ -32,3 +32,9 @@ export interface LoginDTO {
   email: string;
   password: string;
 }
+
+export interface SearchWorkersDTO {
+  location?: string;          // cidade ou bairro
+  serviceType?: string;       // ex: eletricista, pintor
+  minRating?: number;         // ex: 4
+}

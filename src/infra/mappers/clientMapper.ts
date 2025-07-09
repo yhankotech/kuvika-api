@@ -1,5 +1,3 @@
-// src/infra/mappers/clientMapper.ts
-
 import { Client } from '../../domain/entities/client';
 import {
   CreateClientDTO,
