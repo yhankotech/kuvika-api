@@ -39,7 +39,9 @@ favoriteRoutes.post('/favorites',  (request: Request, response: Response) => {
   favoriteController.create(request, response);
 });
 
- /* /favorites/{clientId}:
+/** 
+ * @swagger 
+ * /favorites/{clientId}:
  *   get:
  *     summary: Listar trabalhadores favoritos de um cliente
  *     tags: [Favoritos]
@@ -58,7 +60,9 @@ favoriteRoutes.get('/favorites/:clientId',  (request: Request, response: Respons
   favoriteController.getFavorite(request, response);
 });
 
- /* /favorites:
+ /** 
+ * @swagger 
+  /favorites:
  *   delete:
  *     summary: Remover trabalhador dos favoritos
  *     tags: [Favoritos]

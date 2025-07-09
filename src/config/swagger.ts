@@ -1,4 +1,3 @@
-// src/config/swagger.ts
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
@@ -12,11 +11,11 @@ export const swaggerOptions = {
       description: 'Documentação da API da plataforma Kuvika',
     },
   },
-   apis: ['src/http/routes/**/*.ts'], 
+  apis: ['src/interfaces/routes/**/*.ts'],
 };
 
-const swaggerSpec = swaggerJSDoc(swaggerOptions);
+export const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 export function setupSwagger(app: Express) {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 }

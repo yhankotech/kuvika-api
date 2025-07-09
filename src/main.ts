@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
-import { swaggerOptions } from './config/swagger';
+import { swaggerSpec } from './config/swagger';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
@@ -32,9 +32,9 @@ app.use('/api/v1', workerRoutes);
 app.use('/api/v1', clientRoutes);
 app.use('/api/v1', serviceRoutes);
 app.use('/api/v1', ratingRoutes);
-app.use('api/v1/', favoriteRoutes)
+app.use('/api/v1/', favoriteRoutes)
 app.use('/api/v1', uploadClientPhotoRoute)
 app.use('api/v1', uploadWorkerPhotoRoute)
 
 // Swagger disponível em /docs
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerOptions));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
