@@ -110,7 +110,7 @@ export class PrismaWorkerRepository implements WorkerRepository {
    async searchWorkers(filters: SearchWorkersDTO): Promise<WorkerSearch[]> {
     const { location, serviceType, minRating } = filters;
 
-    const workers = await prisma.worker.findMany({
+    const workers = await this.connect.worker.findMany({
       where: {
         ...(location && {
           location: {

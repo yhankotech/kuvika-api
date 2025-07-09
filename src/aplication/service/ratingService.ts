@@ -3,6 +3,7 @@ import { Rating } from "../../domain/entities/rating";
 import { ResourceNotFoundError } from "../../shared/errors/error";
 import { RatingDTO } from "../../interfaces/dtos/ratingDto";
 import { WorkerRepository } from "../../domain/repositories/workRepository";
+import {  sendEmail } from "../../adapter/email/sendEmail";
 
 export class RatingService {
   constructor(
@@ -11,6 +12,14 @@ export class RatingService {
     ) {}
 
   async create(data: RatingDTO): Promise<Rating> {
+    const worker = await this.workerRepository.getById(data.workerId);
+
+    if (!worker) {
+      throw new ResourceNotFoundError();
+    }
+
+    sendEmail(worker.email, "Avaliação", data.clientId);
+
     return this.ratingRepository.create({
       ...data,
     });

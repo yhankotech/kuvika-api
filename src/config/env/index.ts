@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { z } from 'zod';
 import { BadError } from '../../shared/errors/error';
 
-
 const schemaEnv = z.object({
     NODE_ENV: z.enum(['dev', 'test', 'production']).default('dev'),
     PORT: z.coerce.number().default(4000),

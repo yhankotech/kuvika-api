@@ -7,7 +7,7 @@ const createClientSchema = z.object({
     workerId: z.string().uuid(),
     serviceDate: z.date(),
     description: z.string(),
-    status: z.string(),
+    status: z.enum(["aceito", "rejeitado", "Pendente"]).default('Pendente'),
 });
 
 const idClientSchema = z.object({
@@ -93,6 +93,10 @@ export class ServiceRequestController {
     try {
         const { id } = idSchema.parse(request.params);
         const { status } = statusSchema.parse(request.body);
+
+        if (status !== "aceito" && status !== "rejeitado") {
+            return response.status(400).json({ error: 'Status deve ser "aceito" ou "rejeitado"' });
+        }
     
         const service = makeService()
 

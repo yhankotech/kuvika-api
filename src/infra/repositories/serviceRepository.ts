@@ -1,13 +1,15 @@
 import { prisma } from "../../infra/database/prisma";
+import { ServiceWithRelations } from "../../infra/database/typePrisma";
 import { ServiceRequestRepository } from "../../domain/repositories/serviceRepository";
 import { Service } from "../../domain/entities/service";
 import { ServiceRequestDTO } from "../../interfaces/dtos/serviceRequestDTO";
+import { ResourceNotFoundError } from "../../shared/errors/error";
 
 export class PrismaServiceRequestRepository implements ServiceRequestRepository {
     private conn = prisma
 
   async create(data: ServiceRequestDTO): Promise<Service> {
-    const serviceRequest = await prisma.serviceRequest.create({
+    const serviceRequest = await this.conn.serviceRequest.create({
       data: {
         ...data,
         status: data.status || "pendente",
@@ -17,7 +19,7 @@ export class PrismaServiceRequestRepository implements ServiceRequestRepository 
   }
 
   async findByClientId(clientId: string): Promise<Service[]> {
-    return await prisma.serviceRequest.findMany({
+    return await this.conn.serviceRequest.findMany({
         where: { clientId },
             include: {
             worker: {
@@ -32,7 +34,7 @@ export class PrismaServiceRequestRepository implements ServiceRequestRepository 
     }
 
     async findByWorkerId(workerId: string): Promise<Service[]> {
-        return await prisma.serviceRequest.findMany({
+        return await this.conn.serviceRequest.findMany({
             where: { workerId },
             include: {
             client: {
@@ -48,7 +50,7 @@ export class PrismaServiceRequestRepository implements ServiceRequestRepository 
     }
 
     async updateStatus(id: string, status: string): Promise<Service | null> {
-        return await prisma.serviceRequest.update({
+        return await this.conn.serviceRequest.update({
             where: { id },
             data: { status },
         });
@@ -62,5 +64,27 @@ export class PrismaServiceRequestRepository implements ServiceRequestRepository 
     })
   }
 
+  async findByIdWithRelations(id: string): Promise<ServiceWithRelations | null> {
+    const service = await this.conn.serviceRequest.findUnique({
+      where: { id },
+      include: {
+        client: {
+          select: {
+            email: true,
+            fullName: true,
+          },
+        },
+        worker: {
+          select: {
+            fullName: true,
+          },
+        },
+      },
+    });
+
+    if(!service) throw new ResourceNotFoundError()
+
+    return service
+  }
 
 }
