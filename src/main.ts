@@ -34,7 +34,7 @@ app.use('/api/v1', serviceRoutes);
 app.use('/api/v1', ratingRoutes);
 app.use('/api/v1/', favoriteRoutes)
 app.use('/api/v1', uploadClientPhotoRoute)
-app.use('api/v1', uploadWorkerPhotoRoute)
+app.use('/api/v1', uploadWorkerPhotoRoute)
 
 // Swagger disponível em /docs
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

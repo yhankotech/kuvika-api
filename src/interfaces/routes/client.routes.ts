@@ -165,23 +165,30 @@ clientRoutes.get('/clients/:id', (request: Request, response: Response) => {
 
 /**
  * @swagger
- * /clients/email/{email}:
+ * /clients/email:
  *   get:
  *     summary: Get a client by email
  *     tags: [Clients]
- *     parameters:
- *       - in: path
- *         name: email
- *         required: true
- *         schema:
- *           type: string
+*     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: cliente@exemplo.com
  *     responses:
  *       200:
  *         description: Client found
  *       404:
  *         description: Client not found
  */
-clientRoutes.get('/clients/email/:email', (request: Request, response: Response) => {
+clientRoutes.get('/clients/email', (request: Request, response: Response) => {
   client.getByEmail(request, response,);
 });
 
