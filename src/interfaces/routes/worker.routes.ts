@@ -17,79 +17,81 @@ const worker = new WorkerController();
  * /workers/login:
  *   post:
  *     summary: Login do trabalhador
- *     tags: -Trabalhador
+ *     tags:
+ *       - Trabalhador
  *     description: Realiza login do cliente com e-mail e senha, retornando um token JWT.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-                - password
-              properties:
-                email:
-                  type: string
-                  format: email
-                  example: cliente@exemplo.com
-                password:
-                  type: string
-                  example: senha123
-      responses:
-        '200':
-          description: Autenticado com sucesso
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-                  client:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        example: c1d2a3...
-                      fullName:
-                        type: string
-                        example: Romeu Cajamba
-                      email:
-                        type: string
-                        example: cliente@exemplo.com
-                      phone:
-                        type: string
-                        example: "923456789"
-                      location:
-                        type: string
-                        example: Luanda
-                      createdAt:
-                        type: string
-                        format: date-time
-                        example: 2025-07-02T12:00:00Z
-        '400':
-          description: Erro de validação nos dados enviados
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Erro de validação
-        '401':
-          description: Credenciais inválidas
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Credenciais inválidas
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: cliente@exemplo.com
+ *               password:
+ *                 type: string
+ *                 example: senha123
+ *     responses:
+ *       '200':
+ *         description: Autenticado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 client:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: c1d2a3...
+ *                     fullName:
+ *                       type: string
+ *                       example: Romeu Cajamba
+ *                     email:
+ *                       type: string
+ *                       example: cliente@exemplo.com
+ *                     phone:
+ *                       type: string
+ *                       example: "923456789"
+ *                     location:
+ *                       type: string
+ *                       example: Luanda
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2025-07-02T12:00:00Z
+ *       '400':
+ *         description: Erro de validação nos dados enviados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Erro de validação
+ *       '401':
+ *         description: Credenciais inválidas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Credenciais inválidas
  */
+
 workerRoutes.post('/workers/login', (request: Request, response: Response) => {
   worker.login(request, response,);
 });
