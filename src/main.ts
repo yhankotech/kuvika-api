@@ -17,6 +17,7 @@ import { ratingRoutes } from "@/interfaces/routes/rating.routes";
 import { favoriteRoutes } from "@/interfaces/routes/favorite.routes";
 import { uploadClientPhotoRoute } from "@/interfaces/routes/uploadClientPhoto.routes";
 import { uploadWorkerPhotoRoute } from "@/interfaces/routes/uploadeWorkerPhoto.routes";
+import { messageRoutes } from "@/interfaces/routes/message.routes";
 
 export const app = express();
 
@@ -39,6 +40,7 @@ app.use('/api/v1', ratingRoutes);
 app.use('/api/v1', favoriteRoutes)
 app.use('/api/v1', uploadClientPhotoRoute)
 app.use('/api/v1', uploadWorkerPhotoRoute)
+app.use('/api/v1', messageRoutes);
 
 // Swagger disponível em /docs
 app.use(env.API_PUBLIC_URL, swaggerUi.serve, swaggerUi.setup(swaggerSpec));

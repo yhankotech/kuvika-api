@@ -35,6 +35,8 @@ model Worker {
   receivedMessages Message[] @relation("WorkerReceivedMessages")
 
   favoritedBy     Favorite[]   
+
+  @@map("worker")
 }
 
 model Client {
@@ -58,6 +60,8 @@ model Client {
   receivedMessages Message[] @relation("ClientReceivedMessages")
 
   favorites        Favorite[] 
+
+  @@map("client")
 }
 
 model ServiceRequest {
@@ -71,6 +75,8 @@ model ServiceRequest {
 
   client      Client   @relation("ClientRequests", fields: [clientId], references: [id])
   worker      Worker   @relation("WorkerRequests", fields: [workerId], references: [id])
+
+  @@map("service_request")
 }
 
 model Rating {
@@ -83,6 +89,8 @@ model Rating {
 
   client    Client   @relation("ClientRatings", fields: [clientId], references: [id])
   worker    Worker   @relation("WorkerRatings", fields: [workerId], references: [id])
+
+  @@map("rating")
 }
 
 model Message {
@@ -98,6 +106,8 @@ model Message {
   senderWorker     Worker? @relation("WorkerSentMessages", fields: [senderId], references: [id], map: "fk_sender_worker")
   recipientClient  Client? @relation("ClientReceivedMessages", fields: [recipientId], references: [id], map: "fk_recipient_client")
   recipientWorker  Worker? @relation("WorkerReceivedMessages", fields: [recipientId], references: [id], map: "fk_recipient_worker")
+
+  @@map("message")
 }
 
 
@@ -111,4 +121,6 @@ model Favorite {
   worker    Worker   @relation(fields: [workerId], references: [id])
 
   @@unique([clientId, workerId])
+
+  @@map("favorite")
 }
