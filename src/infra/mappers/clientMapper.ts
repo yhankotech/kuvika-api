@@ -1,9 +1,9 @@
-import { Client } from '../../domain/entities/client';
+import { Client } from '@/domain/entities/client';
 import {
   CreateClientDTO,
   UpdateClientDTO,
   ReturnClientDTO
-} from '../../interfaces/dtos/clientDto';
+} from '@/interfaces/dtos/clientDto';
 import { randomUUID } from 'crypto';
 
 export class ClientMapper {

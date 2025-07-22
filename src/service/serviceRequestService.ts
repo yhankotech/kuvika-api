@@ -1,9 +1,9 @@
-import { ServiceRequestRepository } from "../../domain/repositories/serviceRepository";
-import { ServiceRequestDTO } from "../../interfaces/dtos/serviceRequestDTO";
-import { ClientRepository } from "../../domain/repositories/clientRepository"
-import { WorkerRepository } from "../../domain/repositories/workRepository"
-import { ResourceNotFoundError } from "../../shared/errors/error";
-import { sendEmail } from "../../adapter/email/sendEmail";
+import { ServiceRequestRepository } from "@/domain/repositories/serviceRepository";
+import { ServiceRequestDTO } from "@/interfaces/dtos/serviceRequestDTO";
+import { ClientRepository } from "@/domain/repositories/clientRepository"
+import { WorkerRepository } from "@/domain/repositories/workRepository"
+import { AppError } from "@/shared/errors/error";
+import { sendEmail } from "@/adapter/email/sendEmail";
 
 export class ServiceRequestUseCase {
   constructor(
@@ -15,11 +15,11 @@ export class ServiceRequestUseCase {
   async create(data: ServiceRequestDTO) {
     const clintId = await this.clientRepository.getById(data.clientId);
 
-    if(!clintId) throw new ResourceNotFoundError()
+    if(!clintId) throw new  AppError("Cliente não encontrado !", 404);
 
     const workerId = await this.workerRepository.getById(data.clientId);
 
-    if(!workerId) throw new ResourceNotFoundError()
+    if(!workerId) throw new AppError("Trabalhador não encontrado !", 404);
 
 
     sendEmail(workerId.email, "Serviço", data.clientId);
@@ -30,7 +30,9 @@ export class ServiceRequestUseCase {
   }
 
   async clientList(clientId: string) {
-    return await this.serviceRequestRepository.findByClientId(clientId);
+    const cliets = await this.serviceRequestRepository.findByClientId(clientId);
+
+    if(!cliets)throw new AppError("Clientes não encontrado !", 404);
   }
 
    async workerList(workerId: string) {
@@ -40,11 +42,11 @@ export class ServiceRequestUseCase {
   async updateRequestStatus(id: string, status: "aceito" | "rejeitado") {
     const updated = await this.serviceRequestRepository.updateStatus(id, status);
 
-    if (!updated) throw new ResourceNotFoundError()
+    if (!updated) throw new AppError("Serviço não encontrado !", 404);
 
     const service = await this.serviceRequestRepository.findByIdWithRelations(id);
     
-    if (!service) throw new ResourceNotFoundError();
+    if (!service) throw new AppError("Serviço não encontrado !", 404);;
 
     const { client, worker } = service;
     

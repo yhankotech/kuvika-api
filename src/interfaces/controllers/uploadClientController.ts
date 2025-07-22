@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { makeClientService } from "../factory/uplaodFactories";
-import { BadError, ResourceNotFoundError } from '../../shared/errors/error';
+import { makeClientService } from "@/interfaces/factory/uplaodFactories";
+import { AppError } from '@/shared/errors/error';
 import z from "zod"
 
 const idSchema = z.object({
@@ -8,54 +8,54 @@ const idSchema = z.object({
 });
 
 export class UploadClientController {
-  async uploadAvatar(req: Request, res: Response) {
-    const { id } = idSchema.parse(req.body);
+  async uploadAvatar(request: Request, response: Response) {
+    const { id } = idSchema.parse(request.body);
 
-    const filename = req.file?.filename;
+    const filename = request.file?.filename;
 
-    if (!id || !filename) return res.status(400).json({ error: 'Dados inválidos' });
+    if (!id || !filename) return response.status(400).json({ error: 'Dados inválidos' });
 
     const service = makeClientService()
 
     const user = await service.upload(id, filename);
-    return res.status(200).json({ message: 'Foto de perfil atualizada com sucesso!', user });
+    return response.status(200).json({ message: 'Foto de perfil atualizada com sucesso!', user });
   }
 
-  async getAvatar(req: Request, res: Response) {
+  async getAvatar(request: Request, response: Response) {
    try {
-     const { filename } = req.params;
+     const { filename } = request.params;
 
       const service = makeClientService()
 
       const filePath = await service .get(filename);
 
-      if (!filePath) return res.status(404).json({ error: 'Imagem não encontrada' });
+      if (!filePath) return response.status(404).json({ error: 'Imagem não encontrada' });
 
-      return res.status(200).sendFile(filePath);
+      return response.status(200).sendFile(filePath);
 
    } catch (error) {
 
-    return res.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
+    return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
     }
   }
 
- async deleteAvatar(req: Request, res: Response) {
+ async deleteAvatar(request: Request, response: Response) {
     try {
-      const { id } = idSchema.parse(req.params);
+      const { id } = idSchema.parse(request.params);
 
       const service = makeClientService()
 
       await service.delete(id);
 
-      return res.json({ message: 'Foto excluída com sucesso' });
+      return response.json({ message: 'Foto excluída com sucesso' });
     } catch (error) {
 
-      if(error instanceof ResourceNotFoundError){
-        return res.status(404).json({message:" Cliente não encontrado"});
+      if(error instanceof AppError){
+        return response.status(404).json({message:" Cliente não encontrado"});
       }
 
-      if(error instanceof BadError){
-        return res.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
+      if(error instanceof AppError){
+        return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
       }
     }
   }

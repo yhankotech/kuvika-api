@@ -1,5 +1,5 @@
-import { FavoriteDTO } from "../../interfaces/dtos/favoriteDto";
-import { Favorite } from "../entities/favorite";
+import { FavoriteDTO } from "@/interfaces/dtos/favoriteDto";
+import { Favorite } from "@/domain/entities/favorite";
 
 export interface FavoriteRepository {
   create(data: FavoriteDTO): Promise<Favorite>;

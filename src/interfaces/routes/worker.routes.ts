@@ -1,20 +1,13 @@
 import { Router, Request, Response, } from 'express';
-import { WorkerController } from '../controllers/workerController';
-import { ensureAuthenticated } from '../../shared/middleware/authenticate';
+import { WorkerController } from '@/interfaces/controllers/workerController';
+import { ensureAuthenticated } from '@/shared/middleware/authenticate';
 
 const workerRoutes = Router();
 const worker = new WorkerController();
 
 /**
  * @swagger
- * tags:
- *   name: Trabalhador
- *   description: Gerenciamento de trabalhadores
- */
-
-/**
- * @swagger
- * /workers/login:
+ * /api/v1/workers/login:
  *   post:
  *     summary: Login do trabalhador
  *     tags:
@@ -98,7 +91,7 @@ workerRoutes.post('/workers/login', (request: Request, response: Response) => {
 
 /**
  * @swagger
- * /workers/logout:
+ * /api/v1/workers/logout:
  *   post:
  *     summary: Realiza o logout do usuário
  *     tags:
@@ -110,8 +103,8 @@ workerRoutes.post('/workers/login', (request: Request, response: Response) => {
  *       401:
  *         description: Token inválido ou inexistente.
  */
-workerRoutes.post('/workers/logout', (req: Request, res: Response) => {
-  worker.logout(req, res);})
+workerRoutes.post('/workers/logout', ensureAuthenticated,(request: Request, response: Response) => {
+  worker.logout(request, response);})
 
 
 /**
@@ -119,8 +112,8 @@ workerRoutes.post('/workers/logout', (req: Request, res: Response) => {
  * tags:
  *   name: Workers
  *   description: Endpoints relacionados aos trabalhadores
-
- * /workers:
+ *
+ * /api/v1/workers:
  *   post:
  *     summary: Cria um novo trabalhador
  *     tags: [Workers]
@@ -178,7 +171,7 @@ workerRoutes.post('/workers', (request: Request, response: Response) => {
 
 /**
  * @swagger
- * /workers:
+ * /api/v1/workers:
  *   get:
  *     summary: Retorna todos os trabalhadores
  *     tags: [Workers]
@@ -188,13 +181,13 @@ workerRoutes.post('/workers', (request: Request, response: Response) => {
  *       400:
  *         description: Erro ao buscar trabalhadores
  */
-workerRoutes.get('/workers', (req: Request, res: Response) => {
-  worker.getAll(req, res);
+workerRoutes.get('/workers', ensureAuthenticated,(request: Request, response: Response) => {
+  worker.getAll(request, response);
 });
 
 /**
  * @swagger
- * /workers/{id}:
+ * /api/v1/workers/{id}:
  *   get:
  *     summary: Retorna um trabalhador por ID
  *     tags: [Workers]
@@ -213,14 +206,14 @@ workerRoutes.get('/workers', (req: Request, res: Response) => {
  *       400:
  *         description: Erro na requisição
  */
-workerRoutes.get('/workers/:id', (req: Request, res: Response) => {
-  worker.getById(req, res);
+workerRoutes.get('/workers/:id', ensureAuthenticated,(request: Request, response: Response) => {
+  worker.getById(request, response);
 });
 
 /**
  * @swagger
- * /workers/{id}:
- *   put:
+ * /api/v1/workers/{id}:
+ *   patch:
  *     summary: Atualiza um trabalhador existente
  *     tags: [Workers]
  *     parameters:
@@ -261,13 +254,13 @@ workerRoutes.get('/workers/:id', (req: Request, res: Response) => {
  *       404:
  *         description: Trabalhador não encontrado
  */
-workerRoutes.put('/workers/:id', (req: Request, res: Response) => {
-  worker.update(req, res);
+workerRoutes.patch('/workers/:id', ensureAuthenticated,(request: Request, response: Response) => {
+  worker.update(request, response);
 });
 
 /**
  * @swagger
- * /workers/{id}:
+ * /api/v1/workers/{id}:
  *   delete:
  *     summary: Deleta um trabalhador
  *     tags: [Workers]
@@ -284,13 +277,13 @@ workerRoutes.put('/workers/:id', (req: Request, res: Response) => {
  *       400:
  *         description: Erro na requisição
  */
-workerRoutes.delete('/workers/:id', (req: Request, res: Response) => {
-  worker.delete(req, res);
+workerRoutes.delete('/workers/:id', ensureAuthenticated,(request: Request, response: Response) => {
+  worker.delete(request, response);
 });
 
 /**
  * @swagger
- * /profile:
+ * /api/v1/workers/me:
  *   get:
  *     summary: Retorna o perfil do usuário autenticado
  *     tags: [Perfil]
@@ -305,12 +298,69 @@ workerRoutes.delete('/workers/:id', (req: Request, res: Response) => {
  *         description: Usuário não encontrado
  */
 
-workerRoutes.get('/workers/me', ensureAuthenticated, (req: Request, res: Response) => {
-  worker.profile(req, res);
+workerRoutes.get('/workers/me', ensureAuthenticated, (request: Request, response: Response) => {
+  worker.profile(request, response);
 });
 
-workerRoutes.get('/search', async (req: Request, res: Response) => {
-  worker.search(req, res);
+/**
+ * @swagger
+ * /api/v1/search:
+ *   get:
+ *     summary: Buscar trabalhadores com base em localização, tipo de serviço e avaliação mínima
+ *     tags: [Perfil]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: location
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Localização do trabalhador
+ *       - in: query
+ *         name: serviceType
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Tipo de serviço oferecido pelo trabalhador
+ *       - in: query
+ *         name: minRating
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *           maximum: 5
+ *         description: Avaliação mínima (0 a 5)
+ *     responses:
+ *       200:
+ *         description: Lista de trabalhadores encontrados com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   serviceType:
+ *                     type: string
+ *                   rating:
+ *                     type: number
+ *                   location:
+ *                     type: string
+ *       400:
+ *         description: Dados inválidos fornecidos
+ *       404:
+ *         description: Nenhum trabalhador encontrado
+ *       401:
+ *         description: Não autenticado
+ */
+
+workerRoutes.get('/search', ensureAuthenticated, async (request: Request, response: Response) => {
+  worker.search(request, response);
 });
 
 

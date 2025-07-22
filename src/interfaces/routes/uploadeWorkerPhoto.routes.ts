@@ -1,20 +1,15 @@
 import { Router, Request, Response} from 'express';
-import { upload } from '../../adapter/multer/multer';
-import { UploadWorkerController } from '../controllers/uploadWorkerController';
+import { upload } from '@/adapter/multer/multer';
+import { UploadWorkerController } from '@/interfaces/controllers/uploadWorkerController';
+import { ensureAuthenticated } from '@/shared/middleware/authenticate';
 
 const uploadWorkerPhotoRoute = Router();
 const workkerAvatarController = new UploadWorkerController()
 
-/**
- * @swagger
- * tags:
- *   name: Avatar
- *   description: Gerenciamento de avatar do trabalhador
- */
 
 /**
  * @swagger
- * /worker/avatar:
+ * /api/v1/worker/avatar:
  *   post:
  *     summary: Fazer upload da foto de perfil do trabalhador
  *     tags: [Avatar]
@@ -51,13 +46,13 @@ const workkerAvatarController = new UploadWorkerController()
  *       400:
  *         description: Dados inválidos ou ausentes
  */
-uploadWorkerPhotoRoute.post('/worker/avatar', upload.single('avatar'), (request: Request, response: Response) => {
+uploadWorkerPhotoRoute.post('/worker/avatar', upload.single('avatar'), ensureAuthenticated,(request: Request, response: Response) => {
   workkerAvatarController.uploadAvatar(request, response);
 });
 
 /**
  * @swagger
- * /worker/avatar/{filename}:
+ * /api/v1/worker/avatar/{filename}:
  *   get:
  *     summary: Obter imagem do avatar do trabalhador
  *     tags: [Avatar]
@@ -80,13 +75,13 @@ uploadWorkerPhotoRoute.post('/worker/avatar', upload.single('avatar'), (request:
  *         description: Imagem não encontrada
  */
 
-uploadWorkerPhotoRoute.get('/worker/avatar/:filename', (request: Request, response: Response) => {
+uploadWorkerPhotoRoute.get('/worker/avatar/:filename', ensureAuthenticated,(request: Request, response: Response) => {
   workkerAvatarController.getAvatar(request, response);
 });
 
 /**
  * @swagger
- * /worker/avatar/{id}:
+ * /api/v1/worker/avatar/{id}:
  *   delete:
  *     summary: Excluir avatar do trabalhador
  *     tags: [Avatar]
@@ -112,7 +107,7 @@ uploadWorkerPhotoRoute.get('/worker/avatar/:filename', (request: Request, respon
  *         description: Usuário ou avatar não encontrado
  */
 
-uploadWorkerPhotoRoute.delete('/worker/avatar/:id', (request: Request, response: Response) => {
+uploadWorkerPhotoRoute.delete('/worker/avatar/:id', ensureAuthenticated,(request: Request, response: Response) => {
   workkerAvatarController.deleteAvatar(request, response);
 });
 

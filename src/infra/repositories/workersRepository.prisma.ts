@@ -1,7 +1,7 @@
-import { prisma } from '../database/prisma';
-import { WorkerRepository } from '../../domain/repositories/workRepository';
-import { Worker, WorkerSearch } from '../../domain/entities/worker';
-import { SearchWorkersDTO } from "../../interfaces/dtos/workerDto";
+import { prisma } from '@/infra/database/prisma';
+import { WorkerRepository } from '@/domain/repositories/workRepository';
+import { Worker, WorkerSearch } from '@/domain/entities/worker';
+import { SearchWorkersDTO } from "@/interfaces/dtos/workerDto";
 
 export class PrismaWorkerRepository implements WorkerRepository {
   private connect = prisma;

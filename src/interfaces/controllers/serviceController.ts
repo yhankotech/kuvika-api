@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { makeService } from "../factory/serviceFactory";
-import { BadError, ResourceNotFoundError } from "../../shared/errors/error";
+import { makeService } from "@/interfaces/factory/serviceFactory";
+import { AppError } from "@/shared/errors/error";
 import z from "zod";
 
 const createClientSchema = z.object({
@@ -49,7 +49,7 @@ export class ServiceRequestController {
             return response.status(400).json({ error: 'Erro de validação', details: error.errors });
         }
 
-        if(error instanceof BadError){
+        if(error instanceof AppError){
             return response.status(400).json({error: "Alguma coisa deu errado!"})
         }
     }
@@ -66,7 +66,7 @@ export class ServiceRequestController {
         return response.status(200).json(requests);
 
    } catch (error) {
-        if(error instanceof ResourceNotFoundError){
+        if(error instanceof AppError){
             return response.status(404).json({error: "Cliente não existe!"})
         }
     }
@@ -83,7 +83,7 @@ export class ServiceRequestController {
         return response.status(200).json(requests);
 
     } catch (error) {
-        if(error instanceof ResourceNotFoundError){
+        if(error instanceof AppError){
             return response.status(404).json({error: "Trabalhador não existe!"})
         }
     }
@@ -108,11 +108,11 @@ export class ServiceRequestController {
             return response.status(400).json({ error: 'Erro de validação', details: error.errors });
         }
 
-        if(error instanceof ResourceNotFoundError){
+        if(error instanceof AppError){
             return response.status(404).json({error: "Solicitação de serviço não existe!"})
         }
 
-        if(error instanceof BadError){
+        if(error instanceof AppError){
             return response.status(400).json({error: "Alguma coisa deu errado!"})
         }
     }
@@ -128,11 +128,11 @@ export class ServiceRequestController {
         return response.status(200).json(updated);
 
     } catch (error) {
-        if(error instanceof ResourceNotFoundError){
+        if(error instanceof AppError){
             return response.status(404).json({error: "Solicitação de serviço não existe!"})
         }
 
-        if(error instanceof BadError){
+        if(error instanceof AppError){
             return response.status(400).json({error: "Alguma coisa deu errado!"})
         }
     }

@@ -1,5 +1,5 @@
-import { prisma } from '../database/prisma';
-import { UserRepository } from '../../domain/repositories/uploadRepository';
+import { prisma } from '@/infra/database/prisma';
+import { UserRepository } from '@/domain/repositories/uploadRepository';
 
 export class PrismaClientRepository implements UserRepository {
   private connect = prisma;

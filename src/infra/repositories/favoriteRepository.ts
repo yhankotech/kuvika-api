@@ -1,7 +1,7 @@
-import { FavoriteRepository } from "../../domain/repositories/favoriteRepository";
-import { FavoriteDTO } from "../../interfaces/dtos/favoriteDto";
-import { prisma } from "../database/prisma";
-import { Favorite } from "../../domain/entities/favorite";
+import { FavoriteRepository } from "@/domain/repositories/favoriteRepository";
+import { FavoriteDTO } from "@/interfaces/dtos/favoriteDto";
+import { prisma } from '@/infra/database/prisma';
+import { Favorite } from "@/domain/entities/favorite";
 
 export class PrismaFavoriteRepository implements FavoriteRepository {
     private connect = prisma;

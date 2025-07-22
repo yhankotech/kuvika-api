@@ -1,7 +1,7 @@
-import { PrismaFavoriteRepository } from '../../infra/repositories/favoriteRepository';
-import { PrismaWorkerRepository } from '../../infra/repositories/workersRepository.prisma';
-import { PrismaClientRepository } from '../../infra/repositories/clientRepository.prisma';
-import { FavoriteService } from '../../aplication/service/favoriteService';
+import { PrismaFavoriteRepository } from '@/infra/repositories/favoriteRepository';
+import { PrismaWorkerRepository } from '@/infra/repositories/workersRepository.prisma';
+import { PrismaClientRepository } from '@/infra/repositories/clientRepository.prisma';
+import { FavoriteService } from '@/service/favoriteService';
 
 export function makeService() {
   const repoFavorite = new PrismaFavoriteRepository();

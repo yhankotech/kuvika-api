@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
-import { ServiceRequestController } from "../controllers/serviceController";
+import { ServiceRequestController } from "@/interfaces/controllers/serviceController";
+import { ensureAuthenticated } from "@/shared/middleware/authenticate";
 
 const serviceRoutes = Router();
 const serviceController = new ServiceRequestController();
@@ -13,7 +14,7 @@ const serviceController = new ServiceRequestController();
 
 /**
  * @swagger
- * /service/requests:
+ * /api/v1/service/requests:
  *   post:
  *     summary: Criar uma solicitação de serviço
  *     tags:
@@ -54,13 +55,13 @@ const serviceController = new ServiceRequestController();
  *       '400':
  *         description: Erro de validação ou erro na criação
  */
-serviceRoutes.post("/service/requests", (request: Request, response: Response) => {
+serviceRoutes.post("/service/requests", ensureAuthenticated, (request: Request, response: Response) => {
   serviceController.create(request, response);
 });
 
 /**
  * @swagger
- * /service/requests/client/{clientId}:
+ * /api/v1/service/requests/client/{clientId}:
  *   get:
  *     summary: Buscar solicitações de serviço por cliente
  *     tags:
@@ -79,13 +80,13 @@ serviceRoutes.post("/service/requests", (request: Request, response: Response) =
  *       '404':
  *         description: Cliente não encontrado
  */
-serviceRoutes.get("/service/requests/client/:clientId", (request: Request, response: Response) => {
+serviceRoutes.get("/service/requests/client/:clientId", ensureAuthenticated,(request: Request, response: Response) => {
   serviceController.getByClient(request, response);
 });
 
 /**
  * @swagger
- * /service/requests/worker/{workerId}:
+ * /api/v1/service/requests/worker/{workerId}:
  *   get:
  *     summary: Buscar solicitações de serviço por trabalhador
  *     tags:
@@ -104,13 +105,13 @@ serviceRoutes.get("/service/requests/client/:clientId", (request: Request, respo
  *       '404':
  *         description: Trabalhador não encontrado
  */
-serviceRoutes.get("/service/requests/worker/:workerId", (request: Request, response: Response) => {
+serviceRoutes.get("/service/requests/worker/:workerId", ensureAuthenticated, (request: Request, response: Response) => {
   serviceController.getByWorker(request, response);
 });
 
 /**
  * @swagger
- * /service/request/{id}/status:
+ * /api/v1/service/request/{id}/status:
  *   patch:
  *     summary: Atualizar status de uma solicitação de serviço
  *     tags:
@@ -142,13 +143,13 @@ serviceRoutes.get("/service/requests/worker/:workerId", (request: Request, respo
  *       '404':
  *         description: Solicitação não encontrada
  */
-serviceRoutes.patch("/service/request/:id/status", (request: Request, response: Response) => {
+serviceRoutes.patch("/service/request/:id/status", ensureAuthenticated, (request: Request, response: Response) => {
   serviceController.updateStatus(request, response);
 });
 
 /**
  * @swagger
- * /service/delete/{id}:
+ * /api/v1/service/delete/{id}:
  *   delete:
  *     summary: Apagar solicitações de serviço
  *     tags:
@@ -167,7 +168,7 @@ serviceRoutes.patch("/service/request/:id/status", (request: Request, response: 
  *       '404':
  *         description: Serviço não encontrado
  */
-serviceRoutes.delete("/service/delete/:id", (request: Request, response: Response) => {
+serviceRoutes.delete("/service/delete/:id", ensureAuthenticated, (request: Request, response: Response) => {
   serviceController.deleteService(request, response);
 });
 

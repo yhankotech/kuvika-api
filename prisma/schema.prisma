@@ -29,7 +29,6 @@ model Worker {
   // Relações
   serviceRequests ServiceRequest[]        @relation("WorkerRequests")
   ratingsReceived Rating[]                @relation("WorkerRatings")
-  messages        Message[]               @relation("WorkerMessages")
 
   // Back relations para mensagens
   sentMessages     Message[] @relation("WorkerSentMessages")
@@ -53,7 +52,6 @@ model Client {
 
   serviceRequests ServiceRequest[]        @relation("ClientRequests")
   ratingsGiven    Rating[]                @relation("ClientRatings")
-  messages        Message[]               @relation("ClientMessages")
 
   // Back relations para mensagens
   sentMessages     Message[] @relation("ClientSentMessages")
@@ -100,10 +98,6 @@ model Message {
   senderWorker     Worker? @relation("WorkerSentMessages", fields: [senderId], references: [id], map: "fk_sender_worker")
   recipientClient  Client? @relation("ClientReceivedMessages", fields: [recipientId], references: [id], map: "fk_recipient_client")
   recipientWorker  Worker? @relation("WorkerReceivedMessages", fields: [recipientId], references: [id], map: "fk_recipient_worker")
-
-  Client Client[] @relation("ClientMessages")
-
-  Worker Worker[] @relation("WorkerMessages")
 }
 
 

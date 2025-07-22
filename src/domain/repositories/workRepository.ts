@@ -1,5 +1,5 @@
-import { Worker,  WorkerSearch} from '../entities/worker';
-import { SearchWorkersDTO } from "../../interfaces/dtos/workerDto";
+import { Worker,  WorkerSearch} from '@/domain/entities/worker';
+import { SearchWorkersDTO } from "@/interfaces/dtos/workerDto";
 
 export interface WorkerRepository {
   create(worker: Worker): Promise<void>;

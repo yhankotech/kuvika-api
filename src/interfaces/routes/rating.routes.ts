@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
-import { RatingController } from "../controllers/ratingController";
+import { RatingController } from "@/interfaces/controllers/ratingController";
+import { ensureAuthenticated } from "@/shared/middleware/authenticate";
 
 const ratingRoutes = Router();
 const ratingController = new RatingController();
@@ -13,7 +14,7 @@ const ratingController = new RatingController();
 
 /**
  * @swagger
- * /ratings:
+ * /api/v1/ratings:
  *   post:
  *     summary: Cadastrar uma nova avaliação
  *     tags: [Avaliações]
@@ -54,13 +55,13 @@ const ratingController = new RatingController();
  *       500:
  *         description: Erro interno no servidor
  */
-ratingRoutes.post("/ratings", (request: Request, response: Response) => {
+ratingRoutes.post("/ratings", ensureAuthenticated,(request: Request, response: Response) => {
   ratingController.create(request, response);
 });
 
 /**
  * @swagger
- * /ratings/worker/{workerId}:
+ * /api/v1/ratings/worker/{workerId}:
  *   get:
  *     summary: Listar avaliações de um trabalhador
  *     tags: [Avaliações]
@@ -80,7 +81,7 @@ ratingRoutes.post("/ratings", (request: Request, response: Response) => {
  *       500:
  *         description: Erro interno
  */
-ratingRoutes.get("/ratings/worker/:workerId", (request: Request, response: Response) => {
+ratingRoutes.get("/ratings/worker/:workerId", ensureAuthenticated, (request: Request, response: Response) => {
   ratingController.getByWorker(request, response);
 });
 

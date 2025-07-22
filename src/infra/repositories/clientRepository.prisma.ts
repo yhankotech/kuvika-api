@@ -1,6 +1,6 @@
-import { prisma } from '../database/prisma';
-import { Client } from '../../domain/entities/client';
-import { ClientRepository } from '../../domain/repositories/clientRepository';
+import { prisma } from '@/infra/database/prisma';
+import { Client } from '@/domain/entities/client';
+import { ClientRepository } from '@/domain/repositories/clientRepository';
 
 export class PrismaClientRepository implements ClientRepository {
   private connect = prisma;

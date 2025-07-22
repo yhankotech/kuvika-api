@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { UserRepository } from '../../domain/repositories/uploadRepository';
-import { ResourceNotFoundError } from '../../shared/errors/error';
+import { UserRepository } from '@/domain/repositories/uploadRepository';
+import { AppError } from '@/shared/errors/error';
 
-export class ManageWorkerAvatarUseCase {
+export class ManageClientAvatarUseCase {
   constructor(private userRepository: UserRepository) {}
 
   async upload(userId: string, filename: string) {
@@ -19,7 +19,7 @@ export class ManageWorkerAvatarUseCase {
   async delete(userId: string) {
     const user = await this.userRepository.findById(userId);
 
-    if (!user || !user.avatar) throw new ResourceNotFoundError();
+    if (!user || !user.avatar) throw new AppError("Usuário não encontrado !", 404);
 
     const filePath = path.resolve(__dirname, '..', '..', 'uploads', 'avatars', user.avatar);
 

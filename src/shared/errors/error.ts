@@ -1,20 +1,11 @@
-export class BadError extends Error {}
+export class AppError extends Error {
+  public readonly status: number;
+  public readonly details?: unknown;
 
-export class EmailAlreadyExist extends  Error{
-   
-     constructor(){
-        super('E-mail já existe na plataforma')
-    }
-}
-
-export class InvalidCredentials extends Error {
-    constructor(){
-        super('❌Credential inválida❗')
-    }
-}
-
-export class ResourceNotFoundError extends Error {
-    constructor(){
-        super('Recurso não encontrado❌')
-    }
+  constructor(message: string, status = 400, details?: unknown) {
+    super(message);
+    this.status = status;
+    this.details = details;
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
 }

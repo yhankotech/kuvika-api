@@ -1,6 +1,6 @@
-import { PrismaWorkerRepository } from '../../infra/repositories/workersRepository.prisma';
-import { WorkerService } from '../../aplication/service/workerService';
-import { PrismaRatingRepository } from "../../infra/repositories/ratingRepository";
+import { PrismaWorkerRepository } from '@/infra/repositories/workersRepository.prisma';
+import { WorkerService } from '@/service/workerService';
+import { PrismaRatingRepository } from "@/infra/repositories/ratingRepository";
 
 export function makeWorker() {
   const repo = new PrismaWorkerRepository();

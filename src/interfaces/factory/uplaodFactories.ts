@@ -1,8 +1,8 @@
-import { PrismaClientRepository } from '../../infra/repositories/uploadPhotoRepository';
-import { ManageClientAvatarUseCase } from '../../aplication/service/uploadClientPhotoService';
+import { PrismaClientRepository } from '@/infra/repositories/uploadPhotoRepository';
+import { ManageClientAvatarUseCase } from '@/service/uploadClientPhotoService';
 
-import { PrismaWorkerRepository } from '../../infra/repositories/uplaodWorkerPhotoRepository';
-import { ManageWorkerAvatarUseCase } from '../../aplication/service/uploadWorkerPhotoService';
+import { PrismaWorkerRepository } from '@/infra/repositories/uplaodWorkerPhotoRepository';
+import { ManageWorkerAvatarUseCase } from '@/service/uploadWorkerPhotoService';
 
 export function makeClientService() {
   const repo = new PrismaClientRepository();

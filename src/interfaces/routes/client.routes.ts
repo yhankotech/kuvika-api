@@ -1,12 +1,13 @@
 import { Router, Request, Response } from 'express';
-import { ClientController } from '../controllers/clientController';
+import { ClientController } from '@/interfaces/controllers/clientController';
+import { ensureAuthenticated } from "@/shared/middleware/authenticate";
 
 const clientRoutes = Router();
 const client = new ClientController();
 
 /**
  * @swagger
- * /login:
+ * /api/v1/login:
  *   post:
  *     summary: Autenticação do Cliente
  *     tags:
@@ -85,8 +86,8 @@ const client = new ClientController();
  */
 
 
-clientRoutes.post('/clients/login', (req: Request, res: Response) => {
-  client.login(req, res);
+clientRoutes.post('/clients/login', (request: Request, response: Response) => {
+  client.login(request, response);
 });
 
 /**
@@ -98,7 +99,7 @@ clientRoutes.post('/clients/login', (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /clients:
+ * /api/v1/clients:
  *   post:
  *     summary: Create a new client
  *     tags: [Clients]
@@ -129,7 +130,7 @@ clientRoutes.post('/clients', (request: Request, response: Response) => {
 
 /**
  * @swagger
- * /clients:
+ * /api/v1/clients:
  *   get:
  *     summary: Get all clients
  *     tags: [Clients]
@@ -137,13 +138,13 @@ clientRoutes.post('/clients', (request: Request, response: Response) => {
  *       200:
  *         description: List of all clients
  */
-clientRoutes.get('/clients', (request: Request, response: Response) => {
+clientRoutes.get('/clients', ensureAuthenticated, (request: Request, response: Response) => {
   client.getAll(request, response,);
 });
 
 /**
  * @swagger
- * /clients/{id}:
+ * /api/v1/clients/{id}:
  *   get:
  *     summary: Get a client by ID
  *     tags: [Clients]
@@ -159,17 +160,17 @@ clientRoutes.get('/clients', (request: Request, response: Response) => {
  *       404:
  *         description: Client not found
  */
-clientRoutes.get('/clients/:id', (request: Request, response: Response) => {
+clientRoutes.get('/clients/:id', ensureAuthenticated, (request: Request, response: Response) => {
   client.getById(request, response,);
 });
 
 /**
  * @swagger
- * /clients/email:
+ * /api/v1/clients/email:
  *   get:
  *     summary: Get a client by email
  *     tags: [Clients]
-*     requestBody:
+ *     requestBody:
  *       required: true
  *       content:
  *         application/json:
@@ -188,14 +189,14 @@ clientRoutes.get('/clients/:id', (request: Request, response: Response) => {
  *       404:
  *         description: Client not found
  */
-clientRoutes.get('/clients/email', (request: Request, response: Response) => {
+clientRoutes.get('/clients/email', ensureAuthenticated,(request: Request, response: Response) => {
   client.getByEmail(request, response,);
 });
 
 /**
  * @swagger
- * /clients/{id}:
- *   put:
+ * /api/v1/clients/{id}:
+ *   patch:
  *     summary: Update a client
  *     tags: [Clients]
  *     parameters:
@@ -225,13 +226,13 @@ clientRoutes.get('/clients/email', (request: Request, response: Response) => {
  *       200:
  *         description: Client updated
  */
-clientRoutes.put('/clients/:id', (request: Request, response: Response) => {
+clientRoutes.patch('/clients/:id', ensureAuthenticated, (request: Request, response: Response) => {
   client.update(request, response,);
 });
 
 /**
  * @swagger
- * /clients/{id}:
+ * /api/v1/clients/{id}:
  *   delete:
  *     summary: Delete a client
  *     tags: [Clients]
@@ -245,8 +246,50 @@ clientRoutes.put('/clients/:id', (request: Request, response: Response) => {
  *       204:
  *         description: Client deleted
  */
-clientRoutes.delete('/clients/:id', (request: Request, response: Response) => {
+clientRoutes.delete('/clients/:id', ensureAuthenticated, (request: Request, response: Response) => {
   client.delete(request, response,);
 });
+
+/**
+ * @swagger
+ * /api/v1/clients/me:
+ *   get:
+ *     summary: Retorna o perfil do usuário autenticado
+ *     tags: [Perfil]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Perfil retornado com sucesso
+ *       401:
+ *         description: Não autenticado
+ *       404:
+ *         description: Usuário não encontrado
+ */
+
+clientRoutes.get('/clients/me', ensureAuthenticated, (request: Request, response: Response) => {
+  client.profile(request, response,);
+});
+
+/**
+ * @swagger
+ * /api/v1/clients/logout:
+ *   post:
+ *     summary: Realiza o logout do usuário
+ *     tags:
+ *       - Autenticação
+ *     description: Remove o cookie com o token JWT e encerra a sessão do usuário autenticado (Cliente).
+ *     responses:
+ *       200:
+ *         description: Logout realizado com sucesso.
+ *       401:
+ *         description: Token inválido ou inexistente.
+ */
+
+clientRoutes.get('/clients/logout', ensureAuthenticated, (request: Request, response: Response) => {
+  client.logout(request, response,);
+});
+
+
 
 export { clientRoutes };

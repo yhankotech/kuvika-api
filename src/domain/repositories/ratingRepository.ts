@@ -1,5 +1,5 @@
-import { Rating } from "../entities/rating";
-import { RatingDTO } from "../../interfaces/dtos/ratingDto";
+import { Rating } from "@/domain/entities/rating";
+import { RatingDTO } from "@/interfaces/dtos/ratingDto";
 
 export interface RatingRepository {
   create(data: RatingDTO): Promise<Rating>;

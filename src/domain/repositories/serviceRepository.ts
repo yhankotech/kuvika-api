@@ -1,6 +1,6 @@
-import { ServiceRequestDTO } from "../../interfaces/dtos/serviceRequestDTO";
-import { Service } from "../../domain/entities/service";
-import { ServiceWithRelations } from "../../infra/database/typePrisma";
+import { ServiceRequestDTO } from "@/interfaces/dtos/serviceRequestDTO";
+import { Service } from "@/domain/entities/service";
+import { ServiceWithRelations } from "@/infra/database/typePrisma";
 
 export interface ServiceRequestRepository {
   create(data: ServiceRequestDTO): Promise<Service>;

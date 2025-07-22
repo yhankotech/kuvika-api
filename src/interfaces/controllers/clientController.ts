@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { makeClientService } from '../factory/clientFactory';
-import { BadError, EmailAlreadyExist, InvalidCredentials, ResourceNotFoundError } from '../../shared/errors/error';
-import { env } from '../../config/env';
+import { makeClientService } from '@/interfaces/factory/clientFactory';
+import { AppError } from '@/shared/errors/error';
+import { env } from '@/config/env';
 import jwt from 'jsonwebtoken';
 
 const createClientSchema = z.object({
@@ -38,32 +38,32 @@ export type LoginClientDTO = z.infer<typeof loginClientSchema>;
 
 
 export class ClientController {
-  async login(req: Request, res: Response) {
+  async login(req: Request, response: Response) {
     try {
       const data = loginClientSchema.parse(req.body);
 
       const service = makeClientService();
       const result = await service.login(data);
 
-      return res.status(202).json(result);
+      return response.status(202).json(result);
 
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: 'Erro de validação', details: error.errors });
+        return response.status(400).json({ error: 'Erro de validação', details: error.errors });
       }
 
-      if(error instanceof InvalidCredentials){
-         return res.status(401).json({ error: "E-mail ou senha inválida" });;
+      if(error instanceof AppError){
+         return response.status(401).json({ error: "E-mail ou senha inválida" });;
       }
 
-      if(error instanceof BadError){
-        return res.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
+      if(error instanceof AppError){
+        return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
       }
 
     }
   }
 
-  async logout(req: Request, res: Response): Promise<Response> {
+  async logout(req: Request, response: Response): Promise<Response> {
     const token = req.cookies.token
 
      if (token) {
@@ -75,18 +75,18 @@ export class ClientController {
         await logoutService.getById({ id: payload.sub })
 
       } catch (error) {
-        return res.status(400).json('Token inválido ao tentar fazer logout.')
+        return response.status(400).json('Token inválido ao tentar fazer logout.')
       }
     }
 
     // Limpar o cookie
-    res.clearCookie('token', {
+    response.clearCookie('token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
     })
 
-    return res.status(200).json({ message: 'Logout realizado com sucesso.' })
+    return response.status(200).json({ message: 'Logout realizado com sucesso.' })
   }
 
   async create(request: Request, response: Response) {
@@ -103,11 +103,11 @@ export class ClientController {
         return response.status(400).json({ error: 'Erro de validação', details: error.errors });
       }
 
-      if(error instanceof EmailAlreadyExist){
+      if(error instanceof AppError){
         return response.status(409).json({ error: "E-mail já cadastrado!" });
       }
 
-      if(error instanceof BadError){
+      if(error instanceof AppError){
         return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
       }
     }
@@ -116,12 +116,15 @@ export class ClientController {
   async getAll(_: Request, response: Response) {
     try {
       const service = makeClientService();
+
       const clients = await service.getAll();
+
+      if(!clients) return response.status(404).json({ message: "Clientes não encontrado!" });
 
       return response.status(200).json(clients);
     } catch (error) {
       
-      return response.status(400).json({ error: "Alguma coisa aconteceu na nossa parte!" });
+      throw new AppError("Alguma coisa aconteceu na nossa parte!", 400);
     }
   }
 
@@ -133,14 +136,12 @@ export class ClientController {
 
       const client = await service.getById({id});
 
+      if(!client) return response.status(404).json({ message: "Cliente não encontrado!" });
+
       return response.status(200).json(client);
     } catch (error) {
-      
-      if(error instanceof ResourceNotFoundError){
-        return response.status(404).json({message:" Cliente não encontrado"});
-      }
 
-      if(error instanceof BadError){
+      if(error instanceof AppError){
         return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
       }
     }
@@ -154,15 +155,13 @@ export class ClientController {
 
       const client = await service.getByEmail({email});
 
+      if(!client) return response.status(404).json({ message: "Usuário não encontrado!" });
+
       return response.status(200).json(client);
 
     } catch (error) {
 
-      if(error instanceof ResourceNotFoundError){
-        return response.status(404).json({message:" Cliente não encontrado"});
-      }
-
-      if(error instanceof BadError){
+      if(error instanceof AppError){
         return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
       }
     }
@@ -178,6 +177,8 @@ export class ClientController {
 
       const updated = await service.update(id, body);
 
+      if(!updated) return response.status(404).json({ message: "Usuário não encontrado!" });
+
       return response.status(202).json({ message: 'Cliente atualizado com sucesso', updated });
 
     } catch (error) {
@@ -185,7 +186,7 @@ export class ClientController {
         return response.status(400).json({ error: 'Erro de validação', details: error.errors });
       }
 
-      if(error instanceof ResourceNotFoundError){
+      if(error instanceof AppError){
         return response.status(404).json({message:" Cliente não encontrado"});
       }
   
@@ -204,34 +205,35 @@ export class ClientController {
 
     } catch (error) {
       
-      if(error instanceof ResourceNotFoundError){
+      if(error instanceof AppError){
         return response.status(404).json({message:" Cliente não encontrado"});
       }
 
-      if(error instanceof BadError){
+      if(error instanceof AppError){
         return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
       }
       
     }
   }
 
-  async profile(req: Request, res: Response): Promise<Response> {
+  async profile(req: Request, response: Response): Promise<Response> {
     try {
           const userId = req.user?.id;
           const role = req.user?.role;
       
           if (!userId || !role) {
-             return res.status(401).json({ message: 'Não autenticado' });
+             return response.status(401).json({ message: 'Não autenticado' });
           }
         
           const service = makeClientService();
           const profile = await service.getProfile(userId, role);
+
+          if(!profile) return response.status(404).json({ message: "Perfil não encontrado!" });
             
-          return res.json({ profile });
+          return response.json({ profile });
   
         } catch (err) {
-  
-          return res.status(404).json({ message: "Perfil não encontrado!" });
+          throw new AppError("Alguma coisa aconteceu da nossa parte!", 400)
         }
       }
 }

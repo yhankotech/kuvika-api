@@ -1,6 +1,7 @@
-import { app } from "./main";
-import { env } from "./config/env";
+import { app } from "@/main";
+import { env } from "@/config/env";
+import { logger } from "@/shared/logs/winston";
 
 app.listen(env.PORT,  '0.0.0.0', () => {
-  console.log('Servidor rodando na porta:', env.PORT);
+  logger.info('Servidor rodando na porta:', env.PORT);
 });

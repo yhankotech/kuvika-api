@@ -1,6 +1,7 @@
 import { Router, Request, Response} from 'express';
-import { upload } from '../../adapter/multer/multer';
-import { UploadClientController } from '../controllers/uploadClientController';
+import { upload } from '@/adapter/multer/multer';
+import { UploadClientController } from '@/interfaces/controllers/uploadClientController';
+import { ensureAuthenticated } from '@/shared/middleware/authenticate';
 
 const uploadClientPhotoRoute = Router();
 const clientAvatarController = new UploadClientController()
@@ -14,7 +15,7 @@ const clientAvatarController = new UploadClientController()
 
 /**
  * @swagger
- * /client/avatar:
+ * /api/v1/client/avatar:
  *   post:
  *     summary: Fazer upload da foto de perfil do cliente
  *     tags: [Avatar]
@@ -51,13 +52,13 @@ const clientAvatarController = new UploadClientController()
  *       400:
  *         description: Dados inválidos ou ausentes
  */
-uploadClientPhotoRoute.post('/client/avatar', upload.single('avatar'), (request: Request, response: Response) => {
+uploadClientPhotoRoute.post('/client/avatar', upload.single('avatar'), ensureAuthenticated, (request: Request, response: Response) => {
   clientAvatarController.uploadAvatar(request, response);
 });
 
 /**
  * @swagger
- * /client/avatar/{filename}:
+ * /api/v1/client/avatar/{filename}:
  *   get:
  *     summary: Obter imagem do avatar do cliente
  *     tags: [Avatar]
@@ -80,13 +81,13 @@ uploadClientPhotoRoute.post('/client/avatar', upload.single('avatar'), (request:
  *         description: Imagem não encontrada
  */
 
-uploadClientPhotoRoute.get('/client/avatar/:filename', (request: Request, response: Response) => {
+uploadClientPhotoRoute.get('/client/avatar/:filename', ensureAuthenticated,(request: Request, response: Response) => {
   clientAvatarController.getAvatar(request, response);
 });
 
 /**
  * @swagger
- * /client/avatar/{id}:
+ * /api/v1/client/avatar/{id}:
  *   delete:
  *     summary: Excluir avatar do cliente
  *     tags: [Avatar]
@@ -112,7 +113,7 @@ uploadClientPhotoRoute.get('/client/avatar/:filename', (request: Request, respon
  *         description: Usuário ou avatar não encontrado
  */
 
-uploadClientPhotoRoute.delete('/client/avatar/:id', (request: Request, response: Response) => {
+uploadClientPhotoRoute.delete('/client/avatar/:id', ensureAuthenticated,(request: Request, response: Response) => {
   clientAvatarController.deleteAvatar(request, response);
 });
 
