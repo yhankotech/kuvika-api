@@ -17,7 +17,7 @@ export class ServiceRequestUseCase {
 
     if(!clintId) throw new  AppError("Cliente não encontrado !", 404);
 
-    const workerId = await this.workerRepository.getById(data.clientId);
+    const workerId = await this.workerRepository.getById(data.workerId);
 
     if(!workerId) throw new AppError("Trabalhador não encontrado !", 404);
 
@@ -33,6 +33,8 @@ export class ServiceRequestUseCase {
     const cliets = await this.serviceRequestRepository.findByClientId(clientId);
 
     if(!cliets)throw new AppError("Clientes não encontrado !", 404);
+
+    return cliets
   }
 
    async workerList(workerId: string) {

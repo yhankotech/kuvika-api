@@ -3,7 +3,6 @@ import {
   UpdateClientDTO,
   DeleteClientDTO,
   GetClientByIdDTO,
-  GetClientByEmailDTO,
   ReturnClientDTO,
   LoginClientDTO
 } from '@/interfaces/dtos/clientDto';
@@ -46,7 +45,6 @@ export class ClientService {
 
     return {
       token,
-      client: ClientMapper.toHttp(client)
     };
   }
 
@@ -79,8 +77,9 @@ export class ClientService {
     return ClientMapper.toReturnDTO(client);
   }
 
-  async getByEmail(dto: GetClientByEmailDTO): Promise<ReturnClientDTO | null> {
-    const client = await this.clientRepository.getByEmail(dto.email);
+  async getByEmail(email:string): Promise<ReturnClientDTO> {
+
+    const client = await this.clientRepository.getByEmail(email);
 
     if (!client) throw new AppError("Cliente não encontrado !", 404);
 
@@ -109,14 +108,11 @@ export class ClientService {
     await this.clientRepository.delete(dto.id);
   }
 
-  async getProfile(userId: string, role: "client" | "worker") {
+  async getProfile(userId: string,) {
     const user = await this.clientRepository.getById(userId);
 
     if(!user) throw new AppError("Perfil não encontrado !", 404);
-    
-      if (role === 'client') {
       
-      return await this.clientRepository.getProfile(userId)
-    }
+    return await this.clientRepository.getProfile(userId)
   }
 }

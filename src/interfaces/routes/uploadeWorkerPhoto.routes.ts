@@ -9,7 +9,7 @@ const workkerAvatarController = new UploadWorkerController()
 
 /**
  * @swagger
- * /api/v1/worker/avatar:
+ * /api/v1/workers/avatar/{id}:
  *   post:
  *     summary: Fazer upload da foto de perfil do trabalhador
  *     tags: [Avatar]
@@ -46,7 +46,7 @@ const workkerAvatarController = new UploadWorkerController()
  *       400:
  *         description: Dados inválidos ou ausentes
  */
-uploadWorkerPhotoRoute.post('/worker/avatar', upload.single('avatar'), ensureAuthenticated,(request: Request, response: Response) => {
+uploadWorkerPhotoRoute.post('/workers/avatar/:id', upload.single('avatar'), ensureAuthenticated,(request: Request, response: Response) => {
   workkerAvatarController.uploadAvatar(request, response);
 });
 

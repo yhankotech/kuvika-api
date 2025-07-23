@@ -88,6 +88,4 @@ favoriteRoutes.delete('/favorites',  ensureAuthenticated, (request: Request, res
   favoriteController.removeFromFavorite(request, response);
 });
 
-
-
 export { favoriteRoutes };

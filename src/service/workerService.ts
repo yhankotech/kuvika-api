@@ -1,4 +1,4 @@
-import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO, LoginDTO, SearchWorkersDTO } from '@/interfaces/dtos/workerDto';
+import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO, LoginDTO } from '@/interfaces/dtos/workerDto';
 import { WorkerRepository } from '@/domain/repositories/workRepository';
 import { WorkerMapper } from '@/infra/mappers/workerMapper';
 import  { hash } from 'bcryptjs';
@@ -8,6 +8,7 @@ import { AppError } from '@/shared/errors/error';
 import {  sendEmail } from "@/adapter/email/sendEmail";
 import { env } from '@/config/env';
 import { RatingRepository } from "@/domain/repositories/ratingRepository"
+import { logger } from '@/shared/logs/winston';
 
 export class WorkerService {
   constructor(
@@ -37,8 +38,7 @@ export class WorkerService {
     );
     
     return {
-      token,
-      client: WorkerMapper.toReturnDTO(worker)
+      token
     };
   }
 
@@ -96,22 +96,20 @@ export class WorkerService {
     await this.workerRepository.delete(id);
   }
 
-   async getProfile(userId: string, role: "client" | "worker") {
+  async getProfile(userId: string) {
     const user = await this.workerRepository.getById(userId);
 
     if(!user) throw new AppError("Perfil não encontrado !", 404)
     
-    if (role ===  'worker') {
       const averageRating = await this.ratingRepository.getAverageRatingByWorker(userId);
 
       return {
         ...user,
         averageRating,
       };
-    }
   }
 
-  async search(filters: SearchWorkersDTO) {
-    return this.workerRepository.searchWorkers(filters);
+  async search(location?: string, serviceType?: string, minRating?: number) {
+    return this.workerRepository.searchWorkers(location, serviceType, minRating);
   }
 }

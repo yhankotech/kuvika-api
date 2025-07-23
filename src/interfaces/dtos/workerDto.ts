@@ -32,9 +32,3 @@ export interface LoginDTO {
   email: string;
   password: string;
 }
-
-export interface SearchWorkersDTO {
-  location?: string;
-  serviceType?: string;
-  minRating?: number;
-}

@@ -24,14 +24,15 @@ export class MessageController {
         isFromClient,
       });
 
+      if(!message) return response.status(404).json({message:"Cliente ou Trabalhador não encontrado"})
+
       return response.status(201).json(message);
 
     } catch (error) {
       if (error instanceof z.ZodError) {
         return response.status(400).json({ error: error.errors });
       }
-
-      throw new AppError("Alguma coisa aconteceu da nossa parte!", 400)
+      return response.status(400).json({message: "Alguma coisa aconteceu da nossa parte!"})
     }
   }
 
@@ -48,7 +49,7 @@ export class MessageController {
 
       const messages = await service.findMessage(senderId, recipientId);
 
-      if(!messages) throw new AppError("Cliente ou Trabalhador não encontrado", 404)
+      if(!messages) return response.status(404).json({message:"Cliente ou Trabalhador não encontrado"})
 
       return response.status(200).json(messages);
 

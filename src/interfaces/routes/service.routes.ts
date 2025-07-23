@@ -55,7 +55,7 @@ const serviceController = new ServiceRequestController();
  *       '400':
  *         description: Erro de validação ou erro na criação
  */
-serviceRoutes.post("/service/requests", ensureAuthenticated, (request: Request, response: Response) => {
+serviceRoutes.post("/service/requests/:clientId", ensureAuthenticated, (request: Request, response: Response) => {
   serviceController.create(request, response);
 });
 

@@ -5,7 +5,10 @@ import z from "zod";
 
 const createClientSchema = z.object({
     workerId: z.string().uuid(),
-    serviceDate: z.date(),
+    serviceDate: z.coerce.date({
+        required_error: "A data do serviço é obrigatória",
+        invalid_type_error: "Formato de data inválido",
+    }),
     description: z.string(),
     status: z.enum(["aceito", "rejeitado", "Pendente"]).default('Pendente'),
 });
@@ -23,7 +26,7 @@ const idSchema = z.object({
 });
 
 const statusSchema = z.object({
-    status: z.string(),
+    status: z.enum(["aceito", "rejeitado", "Pendente"]).default('Pendente'),
 });
 
 export class ServiceRequestController {
@@ -42,6 +45,8 @@ export class ServiceRequestController {
         description,
         status,
         });
+
+        if(!request) throw new AppError("Cliente não existe!",404)
 
         return response.status(201).json(request);
     } catch (error) {

@@ -1,6 +1,7 @@
 import { prisma } from '@/infra/database/prisma';
 import { Client } from '@/domain/entities/client';
 import { ClientRepository } from '@/domain/repositories/clientRepository';
+import { AppError } from '@/shared/errors/error';
 
 export class PrismaClientRepository implements ClientRepository {
   private connect = prisma;
@@ -37,7 +38,9 @@ export class PrismaClientRepository implements ClientRepository {
 
   async getByEmail(email: string): Promise<Client | null> {
     const user = await this.connect.client.findUnique({ where: { email } });
-    if (!user) return null;
+
+    if (!user) throw new AppError("Email não encontrado");
+
     return {
       ...user,
       avatar: user.avatar === null ? undefined : user.avatar,

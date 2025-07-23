@@ -9,7 +9,7 @@ const idSchema = z.object({
 
 export class UploadWorkerController {
   async uploadAvatar(request: Request, response: Response) {
-    const { id } = idSchema.parse(request.body);
+    const { id } = idSchema.parse(request.params);
 
     const filename = request.file?.filename;
 
@@ -18,6 +18,7 @@ export class UploadWorkerController {
     const service = makeWorkerService()
 
     const user = await service.upload(id, filename);
+    
     return response.status(200).json({ message: 'Foto de perfil atualizada com sucesso!', user });
   }
 

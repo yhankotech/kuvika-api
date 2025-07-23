@@ -149,11 +149,11 @@ export class ClientController {
 
   async getByEmail(request: Request, response: Response) {
     try {
-      const { email } = emailSchema.parse(request.body);
+      const { email } = emailSchema.parse(request.query);
 
       const service = makeClientService();
 
-      const client = await service.getByEmail({email});
+      const client = await service.getByEmail(email);
 
       if(!client) return response.status(404).json({ message: "Usuário não encontrado!" });
 
@@ -216,17 +216,15 @@ export class ClientController {
     }
   }
 
-  async profile(req: Request, response: Response): Promise<Response> {
+  async profile(request: Request, response: Response): Promise<Response> {
     try {
-          const userId = req.user?.id;
-          const role = req.user?.role;
-      
-          if (!userId || !role) {
-             return response.status(401).json({ message: 'Não autenticado' });
-          }
+          const userIdSchema = z.object({userId : z.string().uuid()});
+
+          const { userId } = userIdSchema.parse(request.params)
         
           const service = makeClientService();
-          const profile = await service.getProfile(userId, role);
+
+          const profile = await service.getProfile(userId);
 
           if(!profile) return response.status(404).json({ message: "Perfil não encontrado!" });
             

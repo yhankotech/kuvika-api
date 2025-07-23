@@ -1,5 +1,4 @@
 import { Worker,  WorkerSearch} from '@/domain/entities/worker';
-import { SearchWorkersDTO } from "@/interfaces/dtos/workerDto";
 
 export interface WorkerRepository {
   create(worker: Worker): Promise<void>;
@@ -9,5 +8,5 @@ export interface WorkerRepository {
   delete(id: string): Promise<void>;
   getById(id: string): Promise<Worker | null>;
   getProfile (id: string): Promise<Worker>
-  searchWorkers(filters: SearchWorkersDTO): Promise<WorkerSearch[]>;
+  searchWorkers( location?: string, serviceType?: string, minRating?: number): Promise<WorkerSearch[]>;
 }

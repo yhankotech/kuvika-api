@@ -18,10 +18,6 @@ export interface GetClientByIdDTO {
   id: string;
 }
 
-export interface GetClientByEmailDTO {
-  email: string;
-}
-
 export interface DeleteClientDTO {
   id: string;
 }

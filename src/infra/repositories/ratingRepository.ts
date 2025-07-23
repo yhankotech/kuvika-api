@@ -20,6 +20,7 @@ export class PrismaRatingRepository implements RatingRepository {
       result.id,
       result.clientId,
       result.workerId,
+      result.serviceRequestId,
       result.score,
       result.comment ?? "",
       result.createdAt
@@ -37,6 +38,7 @@ export class PrismaRatingRepository implements RatingRepository {
           r.id,
           r.clientId,
           r.workerId,
+          r.serviceRequestId,
           r.score,
           r.comment ?? "",
           r.createdAt

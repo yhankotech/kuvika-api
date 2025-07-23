@@ -7,7 +7,7 @@ const client = new ClientController();
 
 /**
  * @swagger
- * /api/v1/login:
+ * /api/v1/clients/login:
  *   post:
  *     summary: Autenticação do Cliente
  *     tags:
@@ -168,26 +168,30 @@ clientRoutes.get('/clients/:id', ensureAuthenticated, (request: Request, respons
  * @swagger
  * /api/v1/clients/email:
  *   get:
- *     summary: Get a client by email
+ *     summary: Buscar cliente por e-mail
  *     tags: [Clients]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 example: cliente@exemplo.com
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: email
+ *         in: query
+ *         required: true
+ *         description: E-mail do cliente
+ *         schema:
+ *           type: string
+ *           format: email
+ *           example: cliente@exemplo.com
  *     responses:
  *       200:
- *         description: Client found
+ *         description: Cliente encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Client'
+ *       400:
+ *         description: E-mail ausente ou inválido
  *       404:
- *         description: Client not found
+ *         description: Cliente não encontrado
  */
 clientRoutes.get('/clients/email', ensureAuthenticated,(request: Request, response: Response) => {
   client.getByEmail(request, response,);
@@ -252,7 +256,7 @@ clientRoutes.delete('/clients/:id', ensureAuthenticated, (request: Request, resp
 
 /**
  * @swagger
- * /api/v1/clients/me:
+ * /api/v1/clients/me/{userId}:
  *   get:
  *     summary: Retorna o perfil do usuário autenticado
  *     tags: [Perfil]
@@ -267,7 +271,7 @@ clientRoutes.delete('/clients/:id', ensureAuthenticated, (request: Request, resp
  *         description: Usuário não encontrado
  */
 
-clientRoutes.get('/clients/me', ensureAuthenticated, (request: Request, response: Response) => {
+clientRoutes.get('/clients/me/:userId', ensureAuthenticated, (request: Request, response: Response) => {
   client.profile(request, response,);
 });
 

@@ -1,7 +1,7 @@
 import { prisma } from '@/infra/database/prisma';
 import { WorkerRepository } from '@/domain/repositories/workRepository';
 import { Worker, WorkerSearch } from '@/domain/entities/worker';
-import { SearchWorkersDTO } from "@/interfaces/dtos/workerDto";
+import { AppError } from '@/shared/errors/error';
 
 export class PrismaWorkerRepository implements WorkerRepository {
   private connect = prisma;
@@ -110,7 +110,7 @@ export class PrismaWorkerRepository implements WorkerRepository {
   }
 
   async getProfile (id: string): Promise<Worker>{
-    const user =  await this.connect.worker.findUnique({ 
+    const user =  await this.connect.worker.findFirst({ 
         where: { id },
         select: {
             id: true,
@@ -126,7 +126,7 @@ export class PrismaWorkerRepository implements WorkerRepository {
       }});
 
       if (!user) {
-        throw new Error('Worker not found');
+        throw new AppError('Worker not found');
       }
 
       return new Worker(
@@ -142,8 +142,7 @@ export class PrismaWorkerRepository implements WorkerRepository {
       );
     }
 
-   async searchWorkers(filters: SearchWorkersDTO): Promise<WorkerSearch[]> {
-    const { location, serviceType, minRating } = filters;
+   async searchWorkers(location?: string, serviceType?: string, minRating?: number): Promise<WorkerSearch[]> {
 
     const workers = await this.connect.worker.findMany({
       where: {

@@ -41,7 +41,7 @@ const worker = new WorkerController();
  *                 token:
  *                   type: string
  *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *                 client:
+ *                 worker:
  *                   type: object
  *                   properties:
  *                     id:
@@ -283,7 +283,7 @@ workerRoutes.delete('/workers/:id', ensureAuthenticated,(request: Request, respo
 
 /**
  * @swagger
- * /api/v1/workers/me:
+ * /api/v1/workers/me/{userId}:
  *   get:
  *     summary: Retorna o perfil do usuário autenticado
  *     tags: [Perfil]
@@ -298,39 +298,40 @@ workerRoutes.delete('/workers/:id', ensureAuthenticated,(request: Request, respo
  *         description: Usuário não encontrado
  */
 
-workerRoutes.get('/workers/me', ensureAuthenticated, (request: Request, response: Response) => {
+workerRoutes.get('/workers/me/:userId', ensureAuthenticated, (request: Request, response: Response) => {
   worker.profile(request, response);
 });
 
 /**
  * @swagger
- * /api/v1/search:
- *   get:
+ * /api/v1/workers/search:
+ *   post:
  *     summary: Buscar trabalhadores com base em localização, tipo de serviço e avaliação mínima
- *     tags: [Perfil]
+ *     tags: [Search]
  *     security:
  *       - cookieAuth: []
- *     parameters:
- *       - in: query
- *         name: location
- *         required: true
- *         schema:
- *           type: string
- *         description: Localização do trabalhador
- *       - in: query
- *         name: serviceType
- *         required: true
- *         schema:
- *           type: string
- *         description: Tipo de serviço oferecido pelo trabalhador
- *       - in: query
- *         name: minRating
- *         required: true
- *         schema:
- *           type: integer
- *           minimum: 0
- *           maximum: 5
- *         description: Avaliação mínima (0 a 5)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - location
+ *               - serviceType
+ *               - minRating
+ *             properties:
+ *               location:
+ *                 type: string
+ *                 description: Localização do trabalhador
+ *               serviceType:
+ *                 type: string
+ *                 description: Tipo de serviço oferecido pelo trabalhador
+ *               minRating:
+ *                 type: integer
+ *                 minimum: 0
+ *                 maximum: 5
+ *                 description: Avaliação mínima (0 a 5)
  *     responses:
  *       200:
  *         description: Lista de trabalhadores encontrados com sucesso
@@ -359,7 +360,7 @@ workerRoutes.get('/workers/me', ensureAuthenticated, (request: Request, response
  *         description: Não autenticado
  */
 
-workerRoutes.get('/search', ensureAuthenticated, async (request: Request, response: Response) => {
+workerRoutes.post('/workers/search', ensureAuthenticated, async (request: Request, response: Response) => {
   worker.search(request, response);
 });
 

@@ -6,6 +6,7 @@ import {
 import { AppError } from '@/shared/errors/error';
 import { env } from '@/config/env';
 import jwt from 'jsonwebtoken';
+import { logger } from '@/shared/logs/winston';
 
 const createWorkerBodySchema = z.object({
   fullName: z.string().min(3, 'Nome muito curto'),
@@ -113,8 +114,8 @@ export class WorkerController {
       if(error instanceof AppError){
         return response.status(409).json({ error: "E-mail já cadastrado!" });
       }
-      
-      throw new AppError("Alguma coisa deu errado na nossa parte!", 400)
+
+      return response.status(400).json({ error: "Alguma coisa aconteceu na nossa parte!" });
 
     }
   }
@@ -140,11 +141,11 @@ export class WorkerController {
       return response.status(200).json(worker);
 
     } catch (error) {
-        if(error instanceof AppError){
-          return response.status(404).json({message:" Cliente não encontrado"});
-        }
-      
-        throw new AppError("Alguma coisa deu errado na nossa parte!", 400)
+      if(error instanceof AppError){
+        return response.status(404).json({message:" Cliente não encontrado"});
+      }
+
+      return response.status(400).json({ error: "Alguma coisa aconteceu na nossa parte!" });
     }
   }
 
@@ -165,7 +166,7 @@ export class WorkerController {
         });
       }
 
-      throw new AppError("Alguma coisa deu errado na nossa parte!", 400)
+      return response.status(400).json({ error: "Alguma coisa aconteceu na nossa parte!" });
     }
   }
 
@@ -190,17 +191,17 @@ export class WorkerController {
 
   async profile(request: Request, response: Response): Promise<Response> {
       try {
-          const userId = request.user?.id;
-          const role = request.user?.role;
-    
-          if (!userId || !role) {
-            return response.status(401).json({ message: 'Não autenticado' });
-          }
+          const userIdSchema = z.object({userId : z.string().uuid()});
+
+          const { userId } = userIdSchema.parse(request.params)
       
           const service = makeWorker();
-          const profile = await service.getProfile(userId, role);
+
+          logger.info(userId, "está achegar aqui")
+
+          const profile = await service.getProfile(userId);
           
-          return response.json({ profile });
+          return response.json( profile );
 
       } catch (err) {
 
@@ -214,21 +215,21 @@ export class WorkerController {
         
         const service = makeWorker();
 
-        const result = await service.search({
+        const result = await service.search(
           location, 
-          minRating, 
-          serviceType
-        });
+          serviceType,
+          minRating,
+        );
 
-        return response.json(result);
+        return response.status(200).json(result);
       } catch (error) {
-          if(error instanceof AppError){
-              return response.status(404).json({message:" Trabalhador não encontrado"});
-            }
+        if(error instanceof AppError){
+            return response.status(404).json({message:" Trabalhador não encontrado"});
+        }
 
-            if(error instanceof AppError){
-              return response.status(400).json({message: "Alguma coisa deu errado na nossa parte!"});
-            }
+        if(error instanceof AppError){
+          return response.status(400).json({message: "Alguma coisa deu errado na nossa parte!"});
+        }
       }
     }
 }
