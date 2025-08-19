@@ -26,7 +26,7 @@ Siga os passos abaixo para executar o projeto em sua máquina local:
 
 No terminal, execute:
 ```bash
-git clone https://github.com/Yhanko/kuvica-api.git
+git clone https://github.com/yhankotech/kuvika-api.git
 cd kuvica-api
 ```
 

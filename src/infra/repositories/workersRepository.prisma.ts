@@ -150,7 +150,7 @@ export class PrismaWorkerRepository implements WorkerRepository {
         user.id,
         user.fullName,
         user.email,
-        '',
+        '', // Ensure password is included for compatibility
         user.phoneNumber,
         user.serviceTypes,
         user.location,
@@ -160,7 +160,7 @@ export class PrismaWorkerRepository implements WorkerRepository {
       );
     }
 
-   async searchWorkers(location?: string, serviceType?: string, minRating?: number): Promise<WorkerSearch[]> {
+   async searchWorkers(location?: string, serviceType?: string, minRating?: number): Promise<WorkerSearch[] | null> {
 
     const workers = await this.connect.worker.findMany({
       where: {
@@ -180,6 +180,8 @@ export class PrismaWorkerRepository implements WorkerRepository {
         ratingsReceived: true,
       },
     });
+
+    if (!workers || workers.length === 0) return null;
 
     const result: WorkerSearch[] = workers
       .map(worker => {

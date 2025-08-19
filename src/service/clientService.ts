@@ -52,9 +52,11 @@ export class ClientService {
   async create(dto: CreateClientDTO): Promise<void> {
     const hashedPassword = await hash(dto.password, 10);
 
-    const client = ClientMapper.toDomain(dto, hashedPassword);
+    const client_by_email = await this.clientRepository.getByEmail(dto.email);
 
-    if(!client) throw new AppError("Cliente não encontrado !", 404);
+    if(client_by_email) throw new AppError("Cliente já cadastrado com esse e-mail !", 409);
+
+    const client = ClientMapper.toDomain(dto, hashedPassword);
 
     // Código de ativação (6 dígitos)
     const code = Math.floor(100000 + Math.random() * 900000).toString();

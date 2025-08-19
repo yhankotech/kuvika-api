@@ -42,10 +42,14 @@ export class WorkerService {
   }
 
   async create(dto: CreateWorkerDTO): Promise<void> {
+    const get_user_by_email = await this.workerRepository.findByEmail(dto.email);
+
+    if (get_user_by_email) {
+      throw new AppError("Trabalhador já cadastrado com esse e-mail !", 409);
+    }
+
     const hashedPassword = await hash(dto.password, 10);
     const worker = WorkerMapper.toDomain(dto, hashedPassword);
-
-    if(!worker) throw new AppError("Trabalhador não encontrado !", 404);
 
     const code = Math.floor(Math.random() * 100000);
 
@@ -121,7 +125,14 @@ export class WorkerService {
   }
 
   async search(location?: string, serviceType?: string, minRating?: number) {
-    return this.workerRepository.searchWorkers(location, serviceType, minRating);
+
+    const workers_services = await this.workerRepository.searchWorkers(location, serviceType, minRating);
+
+    if (!workers_services || workers_services.length === 0) {
+      throw new AppError("Nenhum trabalhador encontrado", 404);
+    }
+
+    return workers_services;
   }
 
   async activate(dto: ActivateWorkerDTO): Promise<void> {

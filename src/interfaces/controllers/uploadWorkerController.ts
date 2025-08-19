@@ -12,7 +12,7 @@ const idSchema = z.object({
 
 export class UploadWorkerController {
   async uploadAvatar(request: Request, response: Response) {
-    const { userId } = idSchema.parse(request.params);
+    const { userId } = idSchema.parse(request.body);
 
     let avatarUrl: string | undefined;
     

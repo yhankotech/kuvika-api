@@ -12,34 +12,49 @@ const idSchema = z.object({
 
 export class UploadClientController {
   async uploadAvatar(request: Request, response: Response) {
-    const { userId } = idSchema.parse(request.body);
+    try {
 
-    let avatarUrl: string | undefined;
+        const { userId } = idSchema.parse(request.body);
 
-    if (request.file){
-      const convertBuffer = await sharp(request.file.buffer).jpeg({quality: 80}).toBuffer();
+      let avatarUrl: string | undefined;
 
-      if(convertBuffer.length > 1024 * 1024 * 2){
-        return response.status(400).json({ error: 'Arquivo muito grande. O tamanho máximo permitido é 2MB.' });
+      if (request.file){
+        const convertBuffer = await sharp(request.file.buffer).jpeg({quality: 80}).toBuffer();
+
+        if(convertBuffer.length > 1024 * 1024 * 2){
+          return response.status(400).json({ error: 'Arquivo muito grande. O tamanho máximo permitido é 2MB.' });
+        }
+
+        const fileName = `user-${generateHash(8)}`;
+        avatarUrl = (await CloudinaryService.upload(
+          convertBuffer, 
+          fileName,
+          "users"
+        )) as string;
+
+        if (!avatarUrl) {
+          return response.status(400).json({ error: 'Imagem é necessária' });
+        }
       }
 
-      const fileName = `user-${generateHash(8)}`;
-      avatarUrl = (await CloudinaryService.upload(
-        convertBuffer, 
-        fileName,
-        "users"
-      )) as string;
+      const service = makeClientService()
 
-      if (!avatarUrl) {
-        return response.status(400).json({ error: 'Imagem é necessária' });
+      const user = await service.upload({userId, filename: avatarUrl });
+
+      return response.status(200).json({ message: 'Foto de perfil atualizada com sucesso!', user });
+        
+    } catch (error) {
+      console.log('o erro:',error)
+      if (error instanceof AppError) {
+        return response.status(400).json({ error: error.message });
       }
+
+      if (error instanceof z.ZodError) {
+        return response.status(400).json({ error: 'Erro de validação', details: error.errors });
+      }
+
+      return response.status(500).json({ error: 'Erro interno do servidor' });
     }
-
-    const service = makeClientService()
-
-    const user = await service.upload({userId, filename: avatarUrl });
-
-    return response.status(200).json({ message: 'Foto de perfil atualizada com sucesso!', user });
   }
 
  async deleteAvatar(request: Request, response: Response) {

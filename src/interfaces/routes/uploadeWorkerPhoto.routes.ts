@@ -46,7 +46,7 @@ const workkerAvatarController = new UploadWorkerController()
  *       400:
  *         description: Dados inválidos ou ausentes
  */
-uploadWorkerPhotoRoute.post('/avatar/:id', upload.single('avatar'), ensureAuthenticated,(request: Request, response: Response) => {
+uploadWorkerPhotoRoute.post('/avatar', upload.single('avatar'), ensureAuthenticated,(request: Request, response: Response) => {
   workkerAvatarController.uploadAvatar(request, response);
 });
 
