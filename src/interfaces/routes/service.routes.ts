@@ -55,7 +55,7 @@ const serviceController = new ServiceRequestController();
  *       '400':
  *         description: Erro de validação ou erro na criação
  */
-serviceRoutes.post("/service/requests/:clientId", ensureAuthenticated, (request: Request, response: Response) => {
+serviceRoutes.post("/requests/:clientId", ensureAuthenticated, (request: Request, response: Response) => {
   serviceController.create(request, response);
 });
 
@@ -80,7 +80,7 @@ serviceRoutes.post("/service/requests/:clientId", ensureAuthenticated, (request:
  *       '404':
  *         description: Cliente não encontrado
  */
-serviceRoutes.get("/service/requests/client/:clientId", ensureAuthenticated,(request: Request, response: Response) => {
+serviceRoutes.get("/requests/client/:clientId", ensureAuthenticated,(request: Request, response: Response) => {
   serviceController.getByClient(request, response);
 });
 
@@ -105,7 +105,7 @@ serviceRoutes.get("/service/requests/client/:clientId", ensureAuthenticated,(req
  *       '404':
  *         description: Trabalhador não encontrado
  */
-serviceRoutes.get("/service/requests/worker/:workerId", ensureAuthenticated, (request: Request, response: Response) => {
+serviceRoutes.get("/requests/worker/:workerId", ensureAuthenticated, (request: Request, response: Response) => {
   serviceController.getByWorker(request, response);
 });
 
@@ -143,7 +143,7 @@ serviceRoutes.get("/service/requests/worker/:workerId", ensureAuthenticated, (re
  *       '404':
  *         description: Solicitação não encontrada
  */
-serviceRoutes.patch("/service/request/:id/status", ensureAuthenticated, (request: Request, response: Response) => {
+serviceRoutes.patch("/request/:id/status", ensureAuthenticated, (request: Request, response: Response) => {
   serviceController.updateStatus(request, response);
 });
 
@@ -168,7 +168,7 @@ serviceRoutes.patch("/service/request/:id/status", ensureAuthenticated, (request
  *       '404':
  *         description: Serviço não encontrado
  */
-serviceRoutes.delete("/service/delete/:id", ensureAuthenticated, (request: Request, response: Response) => {
+serviceRoutes.delete("/delete/:id", ensureAuthenticated, (request: Request, response: Response) => {
   serviceController.deleteService(request, response);
 });
 

@@ -12,8 +12,9 @@ export class WorkerMapper {
       dto.phoneNumber,
       dto.serviceTypes,
       dto.location,
-      dto.availability,
-      new Date()
+      dto.avatar ?? '',
+      new Date(),
+      dto.availability
     );
   }
 
@@ -27,7 +28,8 @@ export class WorkerMapper {
       data.serviceTypes,
       data.location,
       data.availability,
-      data.createdAt
+      data.createdAt,
+      data.avatar
     );
   }
 
@@ -54,7 +56,8 @@ export class WorkerMapper {
       dto.serviceTypes ?? existing.serviceTypes,
       dto.location ?? existing.location,
       dto.availability ?? existing.availability,
-      existing.createdAt
+      existing.createdAt,
+      existing.avatar
     );
   }
 

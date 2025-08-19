@@ -1,7 +1,7 @@
 import { Worker,  WorkerSearch} from '@/domain/entities/worker';
 
 export interface WorkerRepository {
-  create(worker: Worker): Promise<void>;
+  create(worker: Worker): Promise<Worker>;
   findByEmail(email: string): Promise<Worker | null>;
   getAllWorker(): Promise<Worker[] | null>;
   update(id:string, data:Worker): Promise<Worker | null>;
@@ -9,4 +9,5 @@ export interface WorkerRepository {
   getById(id: string): Promise<Worker | null>;
   getProfile (id: string): Promise<Worker>
   searchWorkers( location?: string, serviceType?: string, minRating?: number): Promise<WorkerSearch[]>;
+  updateActivation(clientId: string, isActive: boolean): Promise<void>
 }

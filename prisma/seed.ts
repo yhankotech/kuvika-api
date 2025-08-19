@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
+import { logger } from '@/shared/logs/winston';
 
 const prisma = new PrismaClient();
 
@@ -68,6 +69,7 @@ async function main() {
         data: {
           clientId: faker.helpers.arrayElement(clients).id,
           workerId: faker.helpers.arrayElement(workers).id,
+          serviceRequestId: faker.helpers.arrayElement(serviceRequests).id,
           score: faker.number.int({ min: 1, max: 5 }),
           comment: faker.lorem.sentence(),
         },
@@ -105,12 +107,12 @@ async function main() {
     })
   );
 
-  console.log('✅ Seed realizado com sucesso!');
+  logger.info('✅ Seed realizado com sucesso!');
 }
 
 main()
   .catch((e) => {
-    console.error('Erro durante o seed:', e);
+    logger.error('Erro durante o seed:', e);
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());

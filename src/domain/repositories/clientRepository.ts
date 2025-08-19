@@ -8,4 +8,5 @@ export interface ClientRepository {
   update(id: string, data: Partial<Client>): Promise<Client | null>;
   delete(id: string): Promise<void>;
   getProfile (id: string): Promise<Client>
+  updateActivation(clientId: string, isActive: boolean): Promise<void>
 }

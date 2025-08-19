@@ -3,7 +3,7 @@ import { Rating } from "@/domain/entities/rating";
 import { AppError } from "@/shared/errors/error";
 import { RatingDTO } from "@/interfaces/dtos/ratingDto";
 import { WorkerRepository } from "@/domain/repositories/workRepository";
-import {  sendEmail } from "@/adapter/email/sendEmail";
+import {  sendRatingEmail } from "@/adapter/email/sendServiceEmail";
 
 export class RatingService {
   constructor(
@@ -18,7 +18,7 @@ export class RatingService {
       throw new AppError("Trabalhador não encontrado !", 404);
     }
 
-    sendEmail(worker.email, "Avaliação", data.clientId);
+    sendRatingEmail(worker.email, worker.fullName, 'Cliente');
 
     return this.ratingRepository.create({
       ...data,

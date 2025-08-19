@@ -232,4 +232,20 @@ export class WorkerController {
         }
       }
     }
+  async activate(req: Request, res: Response) {
+      try {
+        const activateSchema = z.object({
+          email: z.string().email(),
+          code: z.string().length(6)
+        });
+  
+        const validated = activateSchema.parse(req.body);
+        const service = makeWorker();
+  
+        await service.activate(validated);
+        return res.json({ message: "Conta ativada com sucesso!" });
+      } catch (err: any) {
+        return res.status(err.status || 500).json({ error: err.message });
+      }
+    }
 }

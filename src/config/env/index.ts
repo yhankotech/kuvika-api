@@ -13,8 +13,13 @@ const schemaEnv = z.object({
     EMAIL_NAME: z.string(),
     EMAIL_USER: z.string(),
     EMAIL_HOST: z.string(),
+    EMAIL_SECURE: z.coerce.boolean(),
+    EMAIL_TLS: z.string(),
     API_PUBLIC_URL: z.string(),
-    API_ORIGINS: z.string()
+    API_ORIGINS: z.string(),
+    CLOUDINARY_CLOUD_NAME: z.string(),
+    CLOUDINARY_API_KEY: z.string(),
+    CLOUDINARY_API_SECRET: z.string()
 })
 
 const _env = schemaEnv.safeParse(process.env)

@@ -46,38 +46,10 @@ const workkerAvatarController = new UploadWorkerController()
  *       400:
  *         description: Dados inválidos ou ausentes
  */
-uploadWorkerPhotoRoute.post('/workers/avatar/:id', upload.single('avatar'), ensureAuthenticated,(request: Request, response: Response) => {
+uploadWorkerPhotoRoute.post('/avatar/:id', upload.single('avatar'), ensureAuthenticated,(request: Request, response: Response) => {
   workkerAvatarController.uploadAvatar(request, response);
 });
 
-/**
- * @swagger
- * /api/v1/worker/avatar/{filename}:
- *   get:
- *     summary: Obter imagem do avatar do trabalhador
- *     tags: [Avatar]
- *     parameters:
- *       - in: path
- *         name: filename
- *         required: true
- *         description: Nome do arquivo de imagem
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Retorna o arquivo de imagem
- *         content:
- *           image/png:
- *             schema:
- *               type: string
- *               format: binary
- *       404:
- *         description: Imagem não encontrada
- */
-
-uploadWorkerPhotoRoute.get('/worker/avatar/:filename', ensureAuthenticated,(request: Request, response: Response) => {
-  workkerAvatarController.getAvatar(request, response);
-});
 
 /**
  * @swagger
@@ -107,7 +79,7 @@ uploadWorkerPhotoRoute.get('/worker/avatar/:filename', ensureAuthenticated,(requ
  *         description: Usuário ou avatar não encontrado
  */
 
-uploadWorkerPhotoRoute.delete('/worker/avatar/:id', ensureAuthenticated,(request: Request, response: Response) => {
+uploadWorkerPhotoRoute.delete('/avatar/:id', ensureAuthenticated,(request: Request, response: Response) => {
   workkerAvatarController.deleteAvatar(request, response);
 });
 

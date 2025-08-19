@@ -3,7 +3,7 @@ import { ServiceRequestDTO } from "@/interfaces/dtos/serviceRequestDTO";
 import { ClientRepository } from "@/domain/repositories/clientRepository"
 import { WorkerRepository } from "@/domain/repositories/workRepository"
 import { AppError } from "@/shared/errors/error";
-import { sendEmail } from "@/adapter/email/sendEmail";
+import { sendServiceRequestEmail, sendServiceResponseEmail } from "@/adapter/email/sendServiceEmail";
 
 export class ServiceRequestUseCase {
   constructor(
@@ -22,8 +22,8 @@ export class ServiceRequestUseCase {
     if(!workerId) throw new AppError("Trabalhador não encontrado !", 404);
 
 
-    sendEmail(workerId.email, "Serviço", data.clientId);
-    
+    sendServiceRequestEmail(workerId.email, workerId.fullName, clintId.fullName);
+
     const request = await this.serviceRequestRepository.create(data);
 
     return request;
@@ -52,10 +52,11 @@ export class ServiceRequestUseCase {
 
     const { client, worker } = service;
     
-    sendEmail(
+    sendServiceResponseEmail(
       client.email,
-      "Serviço",
-      `Olá ${client.fullName},\n\n O trabalhador ${worker.fullName} ${status === "aceito" ? "aceitou" : "rejeitou"} o seu pedido de serviço }.\n\nObrigado pela sua preferência!`
+      client.fullName,
+      worker.fullName,
+      status
     );
 
     return await this.serviceRequestRepository.updateStatus(id, status);

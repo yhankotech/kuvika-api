@@ -85,7 +85,7 @@ const worker = new WorkerController();
  *                   example: Credenciais inválidas
  */
 
-workerRoutes.post('/workers/login', (request: Request, response: Response) => {
+workerRoutes.post('/login', (request: Request, response: Response) => {
   worker.login(request, response,);
 });
 
@@ -103,7 +103,7 @@ workerRoutes.post('/workers/login', (request: Request, response: Response) => {
  *       401:
  *         description: Token inválido ou inexistente.
  */
-workerRoutes.post('/workers/logout', ensureAuthenticated,(request: Request, response: Response) => {
+workerRoutes.post('/logout', ensureAuthenticated,(request: Request, response: Response) => {
   worker.logout(request, response);})
 
 
@@ -164,7 +164,7 @@ workerRoutes.post('/workers/logout', ensureAuthenticated,(request: Request, resp
 
 
 // Passa como callback anônimo para manter tipagem correta
-workerRoutes.post('/workers', (request: Request, response: Response) => {
+workerRoutes.post('/', (request: Request, response: Response) => {
   worker.create(request, response,);
 });
 
@@ -181,7 +181,7 @@ workerRoutes.post('/workers', (request: Request, response: Response) => {
  *       400:
  *         description: Erro ao buscar trabalhadores
  */
-workerRoutes.get('/workers', ensureAuthenticated,(request: Request, response: Response) => {
+workerRoutes.get('/', ensureAuthenticated,(request: Request, response: Response) => {
   worker.getAll(request, response);
 });
 
@@ -206,7 +206,7 @@ workerRoutes.get('/workers', ensureAuthenticated,(request: Request, response: Re
  *       400:
  *         description: Erro na requisição
  */
-workerRoutes.get('/workers/:id', ensureAuthenticated,(request: Request, response: Response) => {
+workerRoutes.get('/:id', ensureAuthenticated,(request: Request, response: Response) => {
   worker.getById(request, response);
 });
 
@@ -254,7 +254,7 @@ workerRoutes.get('/workers/:id', ensureAuthenticated,(request: Request, response
  *       404:
  *         description: Trabalhador não encontrado
  */
-workerRoutes.patch('/workers/:id', ensureAuthenticated,(request: Request, response: Response) => {
+workerRoutes.patch('/:id', ensureAuthenticated,(request: Request, response: Response) => {
   worker.update(request, response);
 });
 
@@ -277,7 +277,7 @@ workerRoutes.patch('/workers/:id', ensureAuthenticated,(request: Request, respon
  *       400:
  *         description: Erro na requisição
  */
-workerRoutes.delete('/workers/:id', ensureAuthenticated,(request: Request, response: Response) => {
+workerRoutes.delete('/:id', ensureAuthenticated,(request: Request, response: Response) => {
   worker.delete(request, response);
 });
 
@@ -298,7 +298,7 @@ workerRoutes.delete('/workers/:id', ensureAuthenticated,(request: Request, respo
  *         description: Usuário não encontrado
  */
 
-workerRoutes.get('/workers/me/:userId', ensureAuthenticated, (request: Request, response: Response) => {
+workerRoutes.get('/me/:userId', ensureAuthenticated, (request: Request, response: Response) => {
   worker.profile(request, response);
 });
 
@@ -360,8 +360,69 @@ workerRoutes.get('/workers/me/:userId', ensureAuthenticated, (request: Request, 
  *         description: Não autenticado
  */
 
-workerRoutes.post('/workers/search', ensureAuthenticated, async (request: Request, response: Response) => {
+workerRoutes.post('/search', ensureAuthenticated, async (request: Request, response: Response) => {
   worker.search(request, response);
+});
+
+/**
+ * @swagger
+ * /activate:
+ *   post:
+ *     summary: Ativa a conta de um cliente
+ *     description: Recebe o email e o código de ativação enviados por email para confirmar a conta do cliente.
+ *     tags:
+ *       - Client
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - code
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: usuario@email.com
+ *               code:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Conta ativada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Conta ativada com sucesso!
+ *       400:
+ *         description: Código inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Código de ativação inválido!
+ *       404:
+ *         description: Cliente não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Cliente não encontrado!
+ */
+
+workerRoutes.post("/activate", (request: Request, response: Response) => {
+  worker.activate(request, response);
 });
 
 

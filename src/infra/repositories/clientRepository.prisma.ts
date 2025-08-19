@@ -7,7 +7,14 @@ export class PrismaClientRepository implements ClientRepository {
   private connect = prisma;
 
   async create(data: Client): Promise<Client> {
-    const user = await this.connect.client.create({ data });
+    const user = await this.connect.client.create({ 
+      data:{
+        ...data,
+        activationCode: data.activationCode,
+        isActive: false,
+        avatar: data.avatar === null ? undefined : data.avatar,
+      }
+     });
     return {
       ...user,
       avatar: user.avatar === null ? undefined : user.avatar,
@@ -76,5 +83,13 @@ export class PrismaClientRepository implements ClientRepository {
 
     return user as Client;
 
+  }
+
+  
+  async updateActivation(clientId: string, isActive: boolean): Promise<void> {
+    await prisma.client.update({
+      where: { id: clientId },
+      data: { isActive, activationCode: null },
+    });
   }
 }

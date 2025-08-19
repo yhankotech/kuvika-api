@@ -6,8 +6,8 @@ import { AppError } from '@/shared/errors/error';
 export class PrismaWorkerRepository implements WorkerRepository {
   private connect = prisma;
 
-  async create(worker: Worker): Promise<void> {
-    await this.connect.worker.create({
+  async create(worker: Worker): Promise<Worker> {
+    const createdWorker = await this.connect.worker.create({
       data: {
         id: worker.id,
         fullName: worker.fullName,
@@ -17,9 +17,26 @@ export class PrismaWorkerRepository implements WorkerRepository {
         serviceTypes: worker.serviceTypes,
         location: worker.location,
         availability: worker.availability,
-        createdAt: worker.createdAt
+        createdAt: worker.createdAt,
+        activationCode: worker.activationCode,
+        isActive: worker.isActive,
+        avatar: worker.avatar === null ? undefined : worker.avatar,
+
       }
     });
+
+    return new Worker(
+      createdWorker.id,
+      createdWorker.fullName,
+      createdWorker.email,
+      createdWorker.password,
+      createdWorker.phoneNumber,
+      createdWorker.serviceTypes,
+      createdWorker.location,
+      createdWorker.availability,
+      createdWorker.createdAt,
+      createdWorker.avatar ?? undefined
+    );
   }
 
   async findByEmail(email: string): Promise<Worker | null> {
@@ -133,12 +150,13 @@ export class PrismaWorkerRepository implements WorkerRepository {
         user.id,
         user.fullName,
         user.email,
-        user.avatar ?? "",
+        '',
         user.phoneNumber,
         user.serviceTypes,
         user.location,
         user.availability,
-        user.createdAt
+        user.createdAt,
+         user.avatar ?? "",
       );
     }
 
@@ -198,4 +216,10 @@ export class PrismaWorkerRepository implements WorkerRepository {
     return result;
   }
 
+  async updateActivation(workerId: string, isActive: boolean): Promise<void> {
+    await prisma.worker.update({
+      where: { id: workerId },
+      data: { isActive, activationCode: null },
+    });
+  }
 }

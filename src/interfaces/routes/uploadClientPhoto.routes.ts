@@ -52,37 +52,8 @@ const clientAvatarController = new UploadClientController()
  *       400:
  *         description: Dados inválidos ou ausentes
  */
-uploadClientPhotoRoute.post('/client/avatar', upload.single('avatar'), ensureAuthenticated, (request: Request, response: Response) => {
+uploadClientPhotoRoute.post('/avatar', upload.single('avatar'), ensureAuthenticated, (request: Request, response: Response) => {
   clientAvatarController.uploadAvatar(request, response);
-});
-
-/**
- * @swagger
- * /api/v1/client/avatar/{filename}:
- *   get:
- *     summary: Obter imagem do avatar do cliente
- *     tags: [Avatar]
- *     parameters:
- *       - in: path
- *         name: filename
- *         required: true
- *         description: Nome do arquivo de imagem
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Retorna o arquivo de imagem
- *         content:
- *           image/png:
- *             schema:
- *               type: string
- *               format: binary
- *       404:
- *         description: Imagem não encontrada
- */
-
-uploadClientPhotoRoute.get('/client/avatar/:filename', ensureAuthenticated,(request: Request, response: Response) => {
-  clientAvatarController.getAvatar(request, response);
 });
 
 /**
@@ -113,7 +84,7 @@ uploadClientPhotoRoute.get('/client/avatar/:filename', ensureAuthenticated,(requ
  *         description: Usuário ou avatar não encontrado
  */
 
-uploadClientPhotoRoute.delete('/client/avatar/:id', ensureAuthenticated,(request: Request, response: Response) => {
+uploadClientPhotoRoute.delete('/avatar/:id', ensureAuthenticated,(request: Request, response: Response) => {
   clientAvatarController.deleteAvatar(request, response);
 });
 

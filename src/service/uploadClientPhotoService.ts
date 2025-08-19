@@ -1,19 +1,11 @@
-import fs from 'fs';
-import path from 'path';
-import { UserRepository } from '@/domain/repositories/uploadRepository';
+import { UploadClientRepository } from '@/domain/repositories/uploadClientRepository';
 import { AppError } from '@/shared/errors/error';
 
 export class ManageClientAvatarUseCase {
-  constructor(private userRepository: UserRepository) {}
+  constructor(private userRepository: UploadClientRepository) {}
 
-  async upload(userId: string, filename: string) {
+  async upload({ userId, filename }: { userId: string; filename: string | undefined }) {
     return await this.userRepository.updateAvatar(userId, filename);
-  }
-
-  async get(filename: string): Promise<string | null> {
-    const filePath = path.resolve(__dirname, '..', '..', 'uploads', 'avatars', filename);
-
-    return fs.existsSync(filePath) ? filePath : null;
   }
 
   async delete(userId: string) {
@@ -21,12 +13,11 @@ export class ManageClientAvatarUseCase {
 
     if (!user || !user.avatar) throw new AppError("Usuário não encontrado !", 404);
 
-    const filePath = path.resolve(__dirname, '..', '..', 'uploads', 'avatars', user.avatar);
-
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
 
     await this.userRepository.removeAvatar(userId);
+  }
+
+  async getById(userId: string) {
+    return await this.userRepository.findById(userId);
   }
 }

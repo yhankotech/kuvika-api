@@ -62,7 +62,7 @@ const controller = new MessageController();
  *         description: Erro interno no servidor
  */
 
-messageRoutes.post('/messages', ensureAuthenticated, (request: Request, response: Response) => {
+messageRoutes.post('/', ensureAuthenticated, (request: Request, response: Response) => {
   controller.send(request, response)});
 
 
@@ -106,7 +106,7 @@ messageRoutes.post('/messages', ensureAuthenticated, (request: Request, response
  *         description: Erro interno no servidor
  */
 
-messageRoutes.get('/messages/:senderId/:recipientId', ensureAuthenticated, (request: Request, response: Response) => {
+messageRoutes.get('/:senderId/:recipientId', ensureAuthenticated, (request: Request, response: Response) => {
   controller.getConversation(request, response)});
 
 /**
@@ -136,7 +136,7 @@ messageRoutes.get('/messages/:senderId/:recipientId', ensureAuthenticated, (requ
  *         description: Erro interno no servidor
  */
 
-messageRoutes.delete('/messages/:id', ensureAuthenticated, (request: Request, response: Response) => {
+messageRoutes.delete('/:id', ensureAuthenticated, (request: Request, response: Response) => {
   controller.delete(request, response)});
 
 export { messageRoutes };

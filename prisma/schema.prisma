@@ -24,6 +24,8 @@ model Worker {
   avatar          String?
   price           Float?
   availability    String
+  activationCode String?
+  isActive       Boolean   @default(false)
   createdAt       DateTime @default(now())
 
   // Relações
@@ -47,6 +49,8 @@ model Client {
   phone     String
   location  String
   avatar   String?
+  activationCode String?
+  isActive       Boolean   @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

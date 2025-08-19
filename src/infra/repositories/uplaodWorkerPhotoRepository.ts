@@ -1,24 +1,43 @@
 import { prisma } from '@/infra/database/prisma';
-import { UserRepository } from '@/domain/repositories/uploadRepository';
+import { UploadWorkerRepository } from '@/domain/repositories/uploadWorkRepository';
 
-export class PrismaWorkerRepository implements UserRepository {
+export class PrismaWorkerRepository implements UploadWorkerRepository {
   private connect = prisma;
 
   async updateAvatar(userId: string, filename: string) {
-    return await this.connect.worker.update({
+    const avatar = await this.connect.worker.update({
       where: { id: userId },
       data: { avatar: filename },
     });
+
+    if (!avatar) return null;
+
+    return {
+      ...avatar,
+      avatar: avatar.avatar ?? undefined,
+    };
   }
 
   async findById(id: string) {
-    return await this.connect.worker.findUnique({ where: { id } });
+    const avatar = await this.connect.worker.findUnique({ where: { id } });
+    if (!avatar) return null;
+
+    return {
+      ...avatar,
+      avatar: avatar.avatar ?? undefined,
+    };
   }
 
   async removeAvatar(id: string) {
-    return await this.connect.worker.update({
+    const avatar = await this.connect.worker.update({
       where: { id },
       data: { avatar: null },
     });
+    if (!avatar) return null;
+
+    return {
+      ...avatar,
+      avatar: avatar.avatar ?? undefined,
+    };
   }
 }

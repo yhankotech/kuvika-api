@@ -4,6 +4,7 @@ export interface CreateClientDTO {
   password: string;
   phone: string;
   location: string;
+  avatar?: string | undefined;
 }
 
 export interface UpdateClientDTO {
@@ -12,6 +13,7 @@ export interface UpdateClientDTO {
   password?: string;
   phone?: string;
   location?: string;
+  avatar?: string | undefined;
 }
 
 export interface GetClientByIdDTO {
@@ -28,6 +30,7 @@ export interface ReturnClientDTO {
   email: string;
   phone: string;
   location: string;
+  avatar?: string | undefined;
   createdAt: Date;
 }
 
@@ -36,3 +39,8 @@ export interface LoginClientDTO {
   email: string,
   password: string
 };
+
+export interface ActivateClientDTO {
+  email: string;
+  code: string;
+}

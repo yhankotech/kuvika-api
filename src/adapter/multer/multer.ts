@@ -1,18 +1,9 @@
-import multer from 'multer';
-import path from 'path';
-import crypto from 'crypto';
-import { fileURLToPath } from 'url';
+import multer from "multer";
 
-const __filename = fileURLToPath(import.meta.url);
-export const __dirname = path.dirname(__filename);
-
-const storage = multer.diskStorage({
-  destination: path.resolve(__dirname, '..', '..', 'uploads', 'avatars'),
-  filename: (req, file, cb) => {
-    const uniqueName = crypto.randomBytes(16).toString('hex');
-    const ext = path.extname(file.originalname);
-    cb(null, `${uniqueName}${ext}`);
-  }
+const storage = multer.memoryStorage();
+export const upload = multer({
+  storage,
+  limits: {
+    fileSize: 1024 * 1024 * 2, // 2MB
+  },
 });
-
-export const upload = multer({ storage });

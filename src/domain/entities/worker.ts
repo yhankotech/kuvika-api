@@ -10,7 +10,9 @@ export class Worker {
     public location: string,
     public availability: string,
     public readonly createdAt: Date,
-    public avatar?: string,
+    public avatar: string | undefined,
+    public activationCode?: string | null,
+    public isActive: boolean = false,
   ) {}
 }
 

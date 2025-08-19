@@ -1,14 +1,13 @@
-import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO, LoginDTO } from '@/interfaces/dtos/workerDto';
+import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO, LoginDTO, ActivateWorkerDTO } from '@/interfaces/dtos/workerDto';
 import { WorkerRepository } from '@/domain/repositories/workRepository';
 import { WorkerMapper } from '@/infra/mappers/workerMapper';
 import  { hash } from 'bcryptjs';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AppError } from '@/shared/errors/error';
-import {  sendEmail } from "@/adapter/email/sendEmail";
+import {  sendActivationEmail } from "@/adapter/email/sendEmailCode";
 import { env } from '@/config/env';
 import { RatingRepository } from "@/domain/repositories/ratingRepository"
-import { logger } from '@/shared/logs/winston';
 
 export class WorkerService {
   constructor(
@@ -46,10 +45,22 @@ export class WorkerService {
     const hashedPassword = await hash(dto.password, 10);
     const worker = WorkerMapper.toDomain(dto, hashedPassword);
 
-    const code = Math.floor(Math.random() * 100000);
-    sendEmail(worker.email, "cadastro",  worker.fullName, code);
+    if(!worker) throw new AppError("Trabalhador não encontrado !", 404);
 
-    await this.workerRepository.create(worker);
+    const code = Math.floor(Math.random() * 100000);
+
+    const userWorker = await this.workerRepository.create({
+      ...worker,
+      activationCode: code.toString(),
+      isActive: false,
+    });
+
+     // Enviar email com código
+    await sendActivationEmail({
+      to: userWorker.email,
+      name: userWorker.fullName,
+      code: code.toString(),
+    });      
   }
 
   async getAll(): Promise<ReturnWorkerDTO[] | null> {
@@ -112,4 +123,17 @@ export class WorkerService {
   async search(location?: string, serviceType?: string, minRating?: number) {
     return this.workerRepository.searchWorkers(location, serviceType, minRating);
   }
+
+  async activate(dto: ActivateWorkerDTO): Promise<void> {
+      const worker = await this.workerRepository.findByEmail(dto.email);
+      
+      if (!worker) throw new AppError("Trabalhador não encontrado!", 404);
+
+      if (worker.activationCode !== dto.code) {
+        throw new AppError("Código de ativação inválido!", 400);
+      }
+
+      await this.workerRepository.updateActivation(worker.id, true);
+    }
+  
 }

@@ -36,7 +36,7 @@ const favoriteController = new FavoriteController()
  *       201:
  *         description: Trabalhador favoritado com sucesso
  */
-favoriteRoutes.post('/favorites', ensureAuthenticated,(request: Request, response: Response) => {
+favoriteRoutes.post('/', ensureAuthenticated,(request: Request, response: Response) => {
   favoriteController.create(request, response);
 });
 
@@ -57,7 +57,7 @@ favoriteRoutes.post('/favorites', ensureAuthenticated,(request: Request, respons
  *       200:
  *         description: Lista de favoritos
  */
-favoriteRoutes.get('/favorites/:clientId',  ensureAuthenticated, (request: Request, response: Response) => {
+favoriteRoutes.get('/:clientId',  ensureAuthenticated, (request: Request, response: Response) => {
   favoriteController.getFavorite(request, response);
 });
 
@@ -84,7 +84,7 @@ favoriteRoutes.get('/favorites/:clientId',  ensureAuthenticated, (request: Reque
  *       204:
  *         description: Removido com sucesso
  */
-favoriteRoutes.delete('/favorites',  ensureAuthenticated, (request: Request, response: Response) => {
+favoriteRoutes.delete('/',  ensureAuthenticated, (request: Request, response: Response) => {
   favoriteController.removeFromFavorite(request, response);
 });
 

@@ -86,7 +86,7 @@ const client = new ClientController();
  */
 
 
-clientRoutes.post('/clients/login', (request: Request, response: Response) => {
+clientRoutes.post('/login', (request: Request, response: Response) => {
   client.login(request, response);
 });
 
@@ -124,7 +124,7 @@ clientRoutes.post('/clients/login', (request: Request, response: Response) => {
  *       201:
  *         description: Client created successfully
  */
-clientRoutes.post('/clients', (request: Request, response: Response) => {
+clientRoutes.post('/', (request: Request, response: Response) => {
   client.create(request, response,);
 });
 
@@ -138,7 +138,7 @@ clientRoutes.post('/clients', (request: Request, response: Response) => {
  *       200:
  *         description: List of all clients
  */
-clientRoutes.get('/clients', ensureAuthenticated, (request: Request, response: Response) => {
+clientRoutes.get('/', ensureAuthenticated, (request: Request, response: Response) => {
   client.getAll(request, response,);
 });
 
@@ -160,7 +160,7 @@ clientRoutes.get('/clients', ensureAuthenticated, (request: Request, response: R
  *       404:
  *         description: Client not found
  */
-clientRoutes.get('/clients/:id', ensureAuthenticated, (request: Request, response: Response) => {
+clientRoutes.get('/:id', ensureAuthenticated, (request: Request, response: Response) => {
   client.getById(request, response,);
 });
 
@@ -193,7 +193,7 @@ clientRoutes.get('/clients/:id', ensureAuthenticated, (request: Request, respons
  *       404:
  *         description: Cliente não encontrado
  */
-clientRoutes.get('/clients/email', ensureAuthenticated,(request: Request, response: Response) => {
+clientRoutes.get('/email', ensureAuthenticated,(request: Request, response: Response) => {
   client.getByEmail(request, response,);
 });
 
@@ -230,7 +230,7 @@ clientRoutes.get('/clients/email', ensureAuthenticated,(request: Request, respon
  *       200:
  *         description: Client updated
  */
-clientRoutes.patch('/clients/:id', ensureAuthenticated, (request: Request, response: Response) => {
+clientRoutes.patch('/:id', ensureAuthenticated, (request: Request, response: Response) => {
   client.update(request, response,);
 });
 
@@ -250,7 +250,7 @@ clientRoutes.patch('/clients/:id', ensureAuthenticated, (request: Request, respo
  *       204:
  *         description: Client deleted
  */
-clientRoutes.delete('/clients/:id', ensureAuthenticated, (request: Request, response: Response) => {
+clientRoutes.delete('/:id', ensureAuthenticated, (request: Request, response: Response) => {
   client.delete(request, response,);
 });
 
@@ -271,7 +271,7 @@ clientRoutes.delete('/clients/:id', ensureAuthenticated, (request: Request, resp
  *         description: Usuário não encontrado
  */
 
-clientRoutes.get('/clients/me/:userId', ensureAuthenticated, (request: Request, response: Response) => {
+clientRoutes.get('/me/:userId', ensureAuthenticated, (request: Request, response: Response) => {
   client.profile(request, response,);
 });
 
@@ -290,10 +290,69 @@ clientRoutes.get('/clients/me/:userId', ensureAuthenticated, (request: Request, 
  *         description: Token inválido ou inexistente.
  */
 
-clientRoutes.get('/clients/logout', ensureAuthenticated, (request: Request, response: Response) => {
+clientRoutes.get('/logout', ensureAuthenticated, (request: Request, response: Response) => {
   client.logout(request, response,);
 });
 
+/**
+ * @swagger
+ * /activate:
+ *   post:
+ *     summary: Ativa a conta de um cliente
+ *     description: Recebe o email e o código de ativação enviados por email para confirmar a conta do cliente.
+ *     tags:
+ *       - Client
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - code
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: usuario@email.com
+ *               code:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Conta ativada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Conta ativada com sucesso!
+ *       400:
+ *         description: Código inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Código de ativação inválido!
+ *       404:
+ *         description: Cliente não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Cliente não encontrado!
+ */
 
+clientRoutes.post("/activate", (request: Request, response: Response) => {
+  client.activate(request, response);
+});
 
 export { clientRoutes };

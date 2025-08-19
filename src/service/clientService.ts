@@ -4,9 +4,10 @@ import {
   DeleteClientDTO,
   GetClientByIdDTO,
   ReturnClientDTO,
-  LoginClientDTO
+  LoginClientDTO,
+  ActivateClientDTO
 } from '@/interfaces/dtos/clientDto';
-import {  sendEmail } from "@/adapter/email/sendEmail";
+import {  sendActivationEmail } from "@/adapter/email/sendEmailCode";
 import { ClientRepository } from '@/domain/repositories/clientRepository';
 import { ClientMapper } from '@/infra/mappers/clientMapper';
 import { hash } from 'bcryptjs';
@@ -55,10 +56,22 @@ export class ClientService {
 
     if(!client) throw new AppError("Cliente não encontrado !", 404);
 
-    const code = Math.floor(Math.random() * 100000);
-    sendEmail(client.email, "cadastro",  client.fullName, code);
+    // Código de ativação (6 dígitos)
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await this.clientRepository.create(client);
+    // Criar cliente no banco
+    const userClient = await this.clientRepository.create({
+      ...client,
+      activationCode: code,
+      isActive: false,
+    });
+
+     // Enviar email com código
+    await sendActivationEmail({
+      to: userClient.email,
+      name: userClient.fullName,
+      code,
+    });
   }
 
   async getAll(): Promise<ReturnClientDTO[] | null> {
@@ -114,5 +127,16 @@ export class ClientService {
     if(!user) throw new AppError("Perfil não encontrado !", 404);
       
     return await this.clientRepository.getProfile(userId)
+  }
+
+  async activate(dto: ActivateClientDTO): Promise<void> {
+    const client = await this.clientRepository.getByEmail(dto.email);
+    if (!client) throw new AppError("Cliente não encontrado!", 404);
+
+    if (client.activationCode !== dto.code) {
+      throw new AppError("Código de ativação inválido!", 400);
+    }
+
+    await this.clientRepository.updateActivation(client.id, true);
   }
 }

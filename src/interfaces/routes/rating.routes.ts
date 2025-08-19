@@ -55,7 +55,7 @@ const ratingController = new RatingController();
  *       500:
  *         description: Erro interno no servidor
  */
-ratingRoutes.post("/ratings", ensureAuthenticated,(request: Request, response: Response) => {
+ratingRoutes.post("/", ensureAuthenticated,(request: Request, response: Response) => {
   ratingController.create(request, response);
 });
 
@@ -81,7 +81,7 @@ ratingRoutes.post("/ratings", ensureAuthenticated,(request: Request, response: R
  *       500:
  *         description: Erro interno
  */
-ratingRoutes.get("/ratings/worker/:workerId", ensureAuthenticated, (request: Request, response: Response) => {
+ratingRoutes.get("/worker/:workerId", ensureAuthenticated, (request: Request, response: Response) => {
   ratingController.getByWorker(request, response);
 });
 

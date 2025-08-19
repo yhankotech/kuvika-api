@@ -10,7 +10,8 @@ const createClientSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
   phone: z.string().min(7, 'Número de telefone inválido'),
-  location: z.string().min(3, 'Localização obrigatória')
+  location: z.string().min(3, 'Localização obrigatória'),
+  avatar: z.string().optional()
 });
 
 const updateClientSchema = z.object({
@@ -234,4 +235,20 @@ export class ClientController {
           throw new AppError("Alguma coisa aconteceu da nossa parte!", 400)
         }
       }
+  async activate(req: Request, res: Response) {
+    try {
+      const activateSchema = z.object({
+        email: z.string().email(),
+        code: z.string().length(6)
+      });
+
+      const validated = activateSchema.parse(req.body);
+      const service = makeClientService();
+
+      await service.activate(validated);
+      return res.json({ message: "Conta ativada com sucesso!" });
+    } catch (err: any) {
+      return res.status(err.status || 500).json({ error: err.message });
+    }
+  }
 }
