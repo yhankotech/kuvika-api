@@ -15,6 +15,7 @@ export class PrismaClientRepository implements ClientRepository {
         avatar: data.avatar === null ? undefined : data.avatar,
       }
      });
+  
     return {
       ...user,
       avatar: user.avatar === null ? undefined : user.avatar,
@@ -25,6 +26,7 @@ export class PrismaClientRepository implements ClientRepository {
     const users = await this.connect.client.findMany();
     return users.map(user => ({
       ...user,
+      password: '',
       avatar: user.avatar === null ? undefined : user.avatar,
     })) as Client[];
   }
@@ -39,6 +41,7 @@ export class PrismaClientRepository implements ClientRepository {
     // Convert avatar: null to avatar: undefined for compatibility with Client type
     return {
       ...user,
+      password: '',
       avatar: user.avatar === null ? undefined : user.avatar,
     } as Client;
   }
@@ -46,7 +49,7 @@ export class PrismaClientRepository implements ClientRepository {
   async getByEmail(email: string): Promise<Client | null> {
     const user = await this.connect.client.findUnique({ where: { email } });
 
-    if (!user) throw new AppError("Email não encontrado");
+    if (!user) return null
 
     return {
       ...user,
