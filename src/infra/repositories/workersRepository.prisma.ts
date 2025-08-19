@@ -1,13 +1,13 @@
-import { prisma } from '../database/prisma';
-import { WorkerRepository } from '../../domain/repositories/workRepository';
-import { Worker, WorkerSearch } from '../../domain/entities/worker';
-import { SearchWorkersDTO } from "../../interfaces/dtos/workerDto";
+import { prisma } from '@/infra/database/prisma';
+import { WorkerRepository } from '@/domain/repositories/workRepository';
+import { Worker, WorkerSearch } from '@/domain/entities/worker';
+import { AppError } from '@/shared/errors/error';
 
 export class PrismaWorkerRepository implements WorkerRepository {
   private connect = prisma;
 
-  async create(worker: Worker): Promise<void> {
-    await this.connect.worker.create({
+  async create(worker: Worker): Promise<Worker> {
+    const createdWorker = await this.connect.worker.create({
       data: {
         id: worker.id,
         fullName: worker.fullName,
@@ -17,9 +17,26 @@ export class PrismaWorkerRepository implements WorkerRepository {
         serviceTypes: worker.serviceTypes,
         location: worker.location,
         availability: worker.availability,
-        createdAt: worker.createdAt
+        createdAt: worker.createdAt,
+        activationCode: worker.activationCode,
+        isActive: worker.isActive,
+        avatar: worker.avatar === null ? undefined : worker.avatar,
+
       }
     });
+
+    return new Worker(
+      createdWorker.id,
+      createdWorker.fullName,
+      createdWorker.email,
+      createdWorker.password,
+      createdWorker.phoneNumber,
+      createdWorker.serviceTypes,
+      createdWorker.location,
+      createdWorker.availability,
+      createdWorker.createdAt,
+      createdWorker.avatar ?? undefined
+    );
   }
 
   async findByEmail(email: string): Promise<Worker | null> {
@@ -35,7 +52,8 @@ export class PrismaWorkerRepository implements WorkerRepository {
       data.serviceTypes,
       data.location,
       data.availability,
-      data.createdAt
+      data.createdAt,
+      data.avatar ?? undefined
     );
   }
 
@@ -43,7 +61,18 @@ export class PrismaWorkerRepository implements WorkerRepository {
       const data = await this.connect.worker.findMany()
       if (!data) return null;
 
-      return data
+      return data.map(worker => new Worker(
+        worker.id,
+        worker.fullName,
+        worker.email,
+        worker.password,
+        worker.phoneNumber,
+        worker.serviceTypes,
+        worker.location,
+        worker.availability,
+        worker.createdAt,
+        worker.avatar ?? undefined
+      ));
   }
 
   async update(id: string, data: Worker): Promise<Worker | null> {
@@ -54,7 +83,18 @@ export class PrismaWorkerRepository implements WorkerRepository {
 
       if (!work) return null;
 
-      return work
+      return new Worker(
+        work.id,
+        work.fullName,
+        work.email,
+        work.password,
+        work.phoneNumber,
+        work.serviceTypes,
+        work.location,
+        work.availability,
+        work.createdAt,
+        work.avatar ?? undefined
+      )
   }
 
   async delete(id: string): Promise<void> {
@@ -72,11 +112,22 @@ export class PrismaWorkerRepository implements WorkerRepository {
 
       if(!workById)return null;
 
-      return workById
+      return new Worker(
+        workById.id,
+        workById.fullName,
+        workById.email,
+        workById.password,
+        workById.phoneNumber,
+        workById.serviceTypes,
+        workById.location,
+        workById.availability,
+        workById.createdAt,
+        workById.avatar ?? undefined
+      );
   }
 
   async getProfile (id: string): Promise<Worker>{
-    const user =  await this.connect.worker.findUnique({ 
+    const user =  await this.connect.worker.findFirst({ 
         where: { id },
         select: {
             id: true,
@@ -87,11 +138,12 @@ export class PrismaWorkerRepository implements WorkerRepository {
             createdAt: true,
             availability: true,
             ratingsReceived: true,
-            serviceTypes: true 
+            serviceTypes: true,
+            avatar: true 
       }});
 
       if (!user) {
-        throw new Error('Worker not found');
+        throw new AppError('Worker not found');
       }
 
       return new Worker(
@@ -103,14 +155,14 @@ export class PrismaWorkerRepository implements WorkerRepository {
         user.serviceTypes,
         user.location,
         user.availability,
-        user.createdAt
+        user.createdAt,
+         user.avatar ?? "",
       );
     }
 
-   async searchWorkers(filters: SearchWorkersDTO): Promise<WorkerSearch[]> {
-    const { location, serviceType, minRating } = filters;
+   async searchWorkers(location?: string, serviceType?: string, minRating?: number): Promise<WorkerSearch[]> {
 
-    const workers = await prisma.worker.findMany({
+    const workers = await this.connect.worker.findMany({
       where: {
         ...(location && {
           location: {
@@ -155,12 +207,19 @@ export class PrismaWorkerRepository implements WorkerRepository {
         worker.email,
         worker.phoneNumber,
         worker.location,
-        worker.serviceTypes,
+        Array.isArray(worker.serviceTypes) ? worker.serviceTypes.join(', ') : worker.serviceTypes,
+        [worker.averageRating.toString()],
         worker.averageRating,
-        worker.description,
+        null 
       ));
 
     return result;
   }
 
+  async updateActivation(workerId: string, isActive: boolean): Promise<void> {
+    await prisma.worker.update({
+      where: { id: workerId },
+      data: { isActive, activationCode: null },
+    });
+  }
 }

@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { FavoriteController } from '../controllers/favoriteController';
+import { FavoriteController } from '@/interfaces/controllers/favoriteController';
+import {ensureAuthenticated} from "@/shared/middleware/authenticate";
 
 const favoriteRoutes = Router()
 const favoriteController = new FavoriteController()
@@ -14,7 +15,7 @@ const favoriteController = new FavoriteController()
 
 /**
  * @swagger
- * /favorites:
+ * /api/v1/favorites:
  *   post:
  *     summary: Adicionar um trabalhador aos favoritos
  *     tags: [Favoritos]
@@ -35,11 +36,13 @@ const favoriteController = new FavoriteController()
  *       201:
  *         description: Trabalhador favoritado com sucesso
  */
-favoriteRoutes.post('/favorites',  (request: Request, response: Response) => {
+favoriteRoutes.post('/', ensureAuthenticated,(request: Request, response: Response) => {
   favoriteController.create(request, response);
 });
 
- /* /favorites/{clientId}:
+/** 
+ * @swagger 
+ * /api/v1/favorites/{clientId}:
  *   get:
  *     summary: Listar trabalhadores favoritos de um cliente
  *     tags: [Favoritos]
@@ -53,12 +56,14 @@ favoriteRoutes.post('/favorites',  (request: Request, response: Response) => {
  *     responses:
  *       200:
  *         description: Lista de favoritos
-*/
-favoriteRoutes.get('/favorites/:clientId',  (request: Request, response: Response) => {
+ */
+favoriteRoutes.get('/:clientId',  ensureAuthenticated, (request: Request, response: Response) => {
   favoriteController.getFavorite(request, response);
 });
 
- /* /favorites:
+/** 
+ * @swagger 
+ * /api/v1/favorites:
  *   delete:
  *     summary: Remover trabalhador dos favoritos
  *     tags: [Favoritos]
@@ -79,10 +84,8 @@ favoriteRoutes.get('/favorites/:clientId',  (request: Request, response: Respons
  *       204:
  *         description: Removido com sucesso
  */
-favoriteRoutes.delete('/favorites',  (request: Request, response: Response) => {
+favoriteRoutes.delete('/',  ensureAuthenticated, (request: Request, response: Response) => {
   favoriteController.removeFromFavorite(request, response);
 });
-
-
 
 export { favoriteRoutes };

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { makeService } from '../factory/favoriteFactory';
-import { BadError, ResourceNotFoundError } from '../../shared/errors/error';
+import { makeService } from '@/interfaces/factory/favoriteFactory';
+import { AppError } from '@/shared/errors/error';
 import { z } from 'zod';
 
 const createFavoriteSchema = z.object({
@@ -28,7 +28,7 @@ export class FavoriteController {
                 return response.status(400).json({ error: 'Erro de validação', details: error.errors });
             }
             
-            if(error instanceof BadError){
+            if(error instanceof AppError){
                 return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
             }
         }
@@ -45,11 +45,11 @@ export class FavoriteController {
             return response.status(200).json(favorites);
 
         } catch (error) {
-            if(error instanceof ResourceNotFoundError){
+            if(error instanceof AppError){
                 return response.status(404).json({message:" Cliente não encontrado"});
             }
 
-            if(error instanceof BadError){
+            if(error instanceof AppError){
                 return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
             }
         }
@@ -66,11 +66,11 @@ export class FavoriteController {
             return response.status(200).json({ message: 'Favorito deletado com sucesso' });
 
         } catch (error){
-            if(error instanceof ResourceNotFoundError){
+            if(error instanceof AppError){
                 return response.status(404).json({message:"Favorito não encontrado"});
             }
 
-            if(error instanceof BadError){
+            if(error instanceof AppError){
                 return response.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
             }
         }

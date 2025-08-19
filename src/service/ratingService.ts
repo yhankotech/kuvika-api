@@ -1,8 +1,9 @@
-import { RatingRepository} from "../../domain/repositories/ratingRepository";
-import { Rating } from "../../domain/entities/rating";
-import { ResourceNotFoundError } from "../../shared/errors/error";
-import { RatingDTO } from "../../interfaces/dtos/ratingDto";
-import { WorkerRepository } from "../../domain/repositories/workRepository";
+import { RatingRepository} from "@/domain/repositories/ratingRepository";
+import { Rating } from "@/domain/entities/rating";
+import { AppError } from "@/shared/errors/error";
+import { RatingDTO } from "@/interfaces/dtos/ratingDto";
+import { WorkerRepository } from "@/domain/repositories/workRepository";
+import {  sendRatingEmail } from "@/adapter/email/sendServiceEmail";
 
 export class RatingService {
   constructor(
@@ -11,6 +12,14 @@ export class RatingService {
     ) {}
 
   async create(data: RatingDTO): Promise<Rating> {
+    const worker = await this.workerRepository.getById(data.workerId);
+
+    if (!worker) {
+      throw new AppError("Trabalhador não encontrado !", 404);
+    }
+
+    sendRatingEmail(worker.email, worker.fullName, 'Cliente');
+
     return this.ratingRepository.create({
       ...data,
     });
@@ -18,9 +27,11 @@ export class RatingService {
 
   async getWorkerRatings(workerId: string): Promise<Rating[]> {
     const ratings = await this.ratingRepository.findByWorkerId(workerId);
+
     if (ratings.length === 0) {
-      throw new ResourceNotFoundError();
+      throw new AppError("Não tem avaliações !");
     }
+
     return ratings;
   }
 
@@ -28,7 +39,7 @@ export class RatingService {
     const worker = await this.workerRepository.getById(workerId);
 
     if (!worker) {
-      throw new ResourceNotFoundError();
+      throw new AppError("Trabalhador não encontrado !", 404);
     }
 
     const averageRating = await this.ratingRepository.getAverageRatingByWorker(workerId);

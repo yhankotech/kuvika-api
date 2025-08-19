@@ -1,4 +1,3 @@
-// src/application/dtos/CreateWorkerDTO.ts
 export interface CreateWorkerDTO {
   fullName: string;
   email: string;
@@ -6,6 +5,7 @@ export interface CreateWorkerDTO {
   phoneNumber: string;
   serviceTypes: string[];
   location: string;
+  avatar?: string | undefined;
   availability: string;
 }
 
@@ -14,6 +14,7 @@ export interface UpdateWorkerDTO {
   phoneNumber?: string;
   serviceTypes?: string[];
   location?: string;
+  avatar?: string | undefined;
   availability?: string;
 }
 
@@ -33,8 +34,7 @@ export interface LoginDTO {
   password: string;
 }
 
-export interface SearchWorkersDTO {
-  location?: string;          // cidade ou bairro
-  serviceType?: string;       // ex: eletricista, pintor
-  minRating?: number;         // ex: 4
+export interface ActivateWorkerDTO {
+  email: string;
+  code: string;
 }

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import z from "zod";
-import { makeRatingService } from "../factory/ratingFactory";
-import { ResourceNotFoundError } from "../../shared/errors/error";
+import { makeRatingService } from "@/interfaces/factory/ratingFactory";
+import { AppError } from "@/shared/errors/error";
 
 const createRatingSchema = z.object({
   clientId: z.string().uuid(),
@@ -16,35 +16,36 @@ const workerIdSchema = z.object({
 });
 
 export class RatingController {
-  async create(req: Request, res: Response) {
+  async create(request: Request, response: Response) {
     try {
-      const data = createRatingSchema.parse(req.body);
+      const data = createRatingSchema.parse(request.body);
 
       const service = makeRatingService();
       const rating = await service.create(data);
 
-      return res.status(201).json(rating);
+      return response.status(201).json(rating);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Erro de validação", details: error.errors });
+        return response.status(400).json({ error: "Erro de validação", details: error.errors });
       }
-      return res.status(500).json({ error: "Erro ao registrar avaliação" });
+      return response.status(500).json({ error: "Erro ao registrar avaliação" });
     }
   }
 
-  async getByWorker(req: Request, res: Response) {
+  async getByWorker(request: Request, response: Response) {
     try {
-      const { workerId } = workerIdSchema.parse(req.params);
+      const { workerId } = workerIdSchema.parse(request.params);
 
       const service = makeRatingService();
       const ratings = await service.getWorkerRatings(workerId);
 
-      return res.status(200).json(ratings);
+      return response.status(200).json(ratings);
     } catch (error) {
-      if (error instanceof ResourceNotFoundError) {
-        return res.status(404).json({ error: "Trabalhador sem avaliações" });
+      if (error instanceof AppError) {
+        return response.status(404).json({ error: "Trabalhador sem avaliações" });
       }
-      return res.status(500).json({ error: "Erro ao buscar avaliações" });
+
+      throw new AppError("Erro ao buscar avaliações", 400);
     }
   }
 }

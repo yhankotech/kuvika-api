@@ -14,6 +14,7 @@ Este projeto foi construído com as seguintes tecnologias:
 - **Swagger**: Biblioteca para documentação da API.
 - **PrismaORM**: ORM para TypeScript e JavaScript (Node.js) que permite trabalhar com bancos de dados como se estivesse manipulando objetos TypeScript.
 - **Zod**: Biblioteca de validação e transformação de dados em JavaScript e TypeScript.
+- **Faker-js**: Biblioteca de dados falsos para testes e e populoar base de dados.
 
 ---
 
@@ -73,3 +74,8 @@ src/
 ### **4. Docuementação da api no swagger**
 
 http://localhost:4000/docs
+
+Execute o seed:
+```bash
+npx prisma db seed
+```

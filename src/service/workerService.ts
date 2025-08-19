@@ -1,13 +1,13 @@
-import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO, LoginDTO, SearchWorkersDTO } from '../../interfaces/dtos/workerDto';
-import { WorkerRepository } from '../../domain/repositories/workRepository';
-import { WorkerMapper } from '../../infra/mappers/workerMapper';
+import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO, LoginDTO, ActivateWorkerDTO } from '@/interfaces/dtos/workerDto';
+import { WorkerRepository } from '@/domain/repositories/workRepository';
+import { WorkerMapper } from '@/infra/mappers/workerMapper';
 import  { hash } from 'bcryptjs';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { InvalidCredentials, ResourceNotFoundError } from '../../shared/errors/error';
-import {  sendEmail } from "../../adapter/email/sendEmail";
-import { env } from '../../config/env';
-import { RatingRepository } from "../../domain/repositories/ratingRepository"
+import { AppError } from '@/shared/errors/error';
+import {  sendActivationEmail } from "@/adapter/email/sendEmailCode";
+import { env } from '@/config/env';
+import { RatingRepository } from "@/domain/repositories/ratingRepository"
 
 export class WorkerService {
   constructor(
@@ -18,11 +18,11 @@ export class WorkerService {
   async execute({ email, password }: LoginDTO) {
     const worker = await this.workerRepository.findByEmail(email);
 
-    if (!worker) throw new ResourceNotFoundError();
+    if (!worker) throw new AppError("Trabalhador não encotrado!", 404);
 
     const passwordMatch = await bcrypt.compare(password, worker.password);
     
-    if (!passwordMatch) throw new InvalidCredentials();
+    if (!passwordMatch) throw new AppError("Palavra passe incorreta", 401);
 
     const token = jwt.sign(
       {
@@ -37,8 +37,7 @@ export class WorkerService {
     );
     
     return {
-      token,
-      client: WorkerMapper.toReturnDTO(worker)
+      token
     };
   }
 
@@ -46,22 +45,36 @@ export class WorkerService {
     const hashedPassword = await hash(dto.password, 10);
     const worker = WorkerMapper.toDomain(dto, hashedPassword);
 
-    const code = Math.floor(Math.random() * 100000);
-    sendEmail(worker.email, "cadastro",  worker.fullName, code);
+    if(!worker) throw new AppError("Trabalhador não encontrado !", 404);
 
-    await this.workerRepository.create(worker);
+    const code = Math.floor(Math.random() * 100000);
+
+    const userWorker = await this.workerRepository.create({
+      ...worker,
+      activationCode: code.toString(),
+      isActive: false,
+    });
+
+     // Enviar email com código
+    await sendActivationEmail({
+      to: userWorker.email,
+      name: userWorker.fullName,
+      code: code.toString(),
+    });      
   }
 
   async getAll(): Promise<ReturnWorkerDTO[] | null> {
     const workers = await this.workerRepository.getAllWorker();
-    if (!workers) return null;
+
+    if (!workers) throw new AppError("Trabalhador não encontrado !", 404);
+
     return workers.map(worker => WorkerMapper.toReturnDTO(worker));
   }
 
   async getById(id: string): Promise<ReturnWorkerDTO | null> {
     const worker = await this.workerRepository.getById(id);
 
-    if (!worker) return null;
+    if (!worker) throw new AppError("Trabalhador não encontrado!", 404);
 
     return WorkerMapper.toReturnDTO(worker);
   }
@@ -70,7 +83,7 @@ export class WorkerService {
     const worker =  await this.workerRepository.findByEmail(email);
 
     if(!worker){
-      throw new ResourceNotFoundError()
+      throw new AppError("Trabalhor não encontrado", 404)
     }
 
     return WorkerMapper.toReturnDTO(worker);
@@ -78,12 +91,15 @@ export class WorkerService {
 
   async update(id: string, dto: UpdateWorkerDTO): Promise<ReturnWorkerDTO | null> {
     const existing = await this.workerRepository.getById(id);
-    if (!existing) return null;
+
+    if (!existing)  throw new AppError("Trabalhador não encontrado !", 404)
 
     const updated = WorkerMapper.toDomainForUpdate(id, dto, existing);
+
     const result = await this.workerRepository.update(id, updated);
 
-    if (!result) return null;
+    if (!result) throw new AppError("Trabalhador não encontrado !", 404);
+
     return WorkerMapper.toReturnDTO(result);
   }
 
@@ -91,22 +107,33 @@ export class WorkerService {
     await this.workerRepository.delete(id);
   }
 
-   async getProfile(userId: string, role: "client" | "worker") {
+  async getProfile(userId: string) {
     const user = await this.workerRepository.getById(userId);
 
-    if(!user) return new ResourceNotFoundError()
+    if(!user) throw new AppError("Perfil não encontrado !", 404)
     
-    if (role ===  'worker') {
       const averageRating = await this.ratingRepository.getAverageRatingByWorker(userId);
 
       return {
         ...user,
         averageRating,
       };
-    }
   }
 
-  async search(filters: SearchWorkersDTO) {
-    return this.workerRepository.searchWorkers(filters);
+  async search(location?: string, serviceType?: string, minRating?: number) {
+    return this.workerRepository.searchWorkers(location, serviceType, minRating);
   }
+
+  async activate(dto: ActivateWorkerDTO): Promise<void> {
+      const worker = await this.workerRepository.findByEmail(dto.email);
+      
+      if (!worker) throw new AppError("Trabalhador não encontrado!", 404);
+
+      if (worker.activationCode !== dto.code) {
+        throw new AppError("Código de ativação inválido!", 400);
+      }
+
+      await this.workerRepository.updateActivation(worker.id, true);
+    }
+  
 }

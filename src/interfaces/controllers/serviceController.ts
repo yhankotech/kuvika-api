@@ -1,13 +1,16 @@
 import { Request, Response } from "express";
-import { makeService } from "../factory/serviceFactory";
-import { BadError, ResourceNotFoundError } from "../../shared/errors/error";
+import { makeService } from "@/interfaces/factory/serviceFactory";
+import { AppError } from "@/shared/errors/error";
 import z from "zod";
 
 const createClientSchema = z.object({
     workerId: z.string().uuid(),
-    serviceDate: z.date(),
+    serviceDate: z.coerce.date({
+        required_error: "A data do serviço é obrigatória",
+        invalid_type_error: "Formato de data inválido",
+    }),
     description: z.string(),
-    status: z.string(),
+    status: z.enum(["aceito", "rejeitado", "Pendente"]).default('Pendente'),
 });
 
 const idClientSchema = z.object({
@@ -23,7 +26,7 @@ const idSchema = z.object({
 });
 
 const statusSchema = z.object({
-    status: z.string(),
+    status: z.enum(["aceito", "rejeitado", "Pendente"]).default('Pendente'),
 });
 
 export class ServiceRequestController {
@@ -43,13 +46,15 @@ export class ServiceRequestController {
         status,
         });
 
+        if(!request) throw new AppError("Cliente não existe!",404)
+
         return response.status(201).json(request);
     } catch (error) {
         if (error instanceof z.ZodError) {
             return response.status(400).json({ error: 'Erro de validação', details: error.errors });
         }
 
-        if(error instanceof BadError){
+        if(error instanceof AppError){
             return response.status(400).json({error: "Alguma coisa deu errado!"})
         }
     }
@@ -66,7 +71,7 @@ export class ServiceRequestController {
         return response.status(200).json(requests);
 
    } catch (error) {
-        if(error instanceof ResourceNotFoundError){
+        if(error instanceof AppError){
             return response.status(404).json({error: "Cliente não existe!"})
         }
     }
@@ -83,7 +88,7 @@ export class ServiceRequestController {
         return response.status(200).json(requests);
 
     } catch (error) {
-        if(error instanceof ResourceNotFoundError){
+        if(error instanceof AppError){
             return response.status(404).json({error: "Trabalhador não existe!"})
         }
     }
@@ -93,6 +98,10 @@ export class ServiceRequestController {
     try {
         const { id } = idSchema.parse(request.params);
         const { status } = statusSchema.parse(request.body);
+
+        if (status !== "aceito" && status !== "rejeitado") {
+            return response.status(400).json({ error: 'Status deve ser "aceito" ou "rejeitado"' });
+        }
     
         const service = makeService()
 
@@ -104,11 +113,11 @@ export class ServiceRequestController {
             return response.status(400).json({ error: 'Erro de validação', details: error.errors });
         }
 
-        if(error instanceof ResourceNotFoundError){
+        if(error instanceof AppError){
             return response.status(404).json({error: "Solicitação de serviço não existe!"})
         }
 
-        if(error instanceof BadError){
+        if(error instanceof AppError){
             return response.status(400).json({error: "Alguma coisa deu errado!"})
         }
     }
@@ -124,11 +133,11 @@ export class ServiceRequestController {
         return response.status(200).json(updated);
 
     } catch (error) {
-        if(error instanceof ResourceNotFoundError){
+        if(error instanceof AppError){
             return response.status(404).json({error: "Solicitação de serviço não existe!"})
         }
 
-        if(error instanceof BadError){
+        if(error instanceof AppError){
             return response.status(400).json({error: "Alguma coisa deu errado!"})
         }
     }

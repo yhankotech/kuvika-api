@@ -1,8 +1,7 @@
-// src/infra/database/prisma/repositories/PrismaRatingRepository.ts
-import { prisma } from "../database/prisma";
-import { RatingDTO } from "../../interfaces/dtos/ratingDto";
-import { Rating } from "../../domain/entities/rating";
-import { RatingRepository } from "../../domain/repositories/ratingRepository";
+import { prisma } from '@/infra/database/prisma';
+import { RatingDTO } from "@/interfaces/dtos/ratingDto";
+import { Rating } from "@/domain/entities/rating";
+import { RatingRepository } from "@/domain/repositories/ratingRepository";
 import { randomUUID } from "crypto";
 
 export class PrismaRatingRepository implements RatingRepository {
@@ -21,6 +20,7 @@ export class PrismaRatingRepository implements RatingRepository {
       result.id,
       result.clientId,
       result.workerId,
+      result.serviceRequestId,
       result.score,
       result.comment ?? "",
       result.createdAt
@@ -38,6 +38,7 @@ export class PrismaRatingRepository implements RatingRepository {
           r.id,
           r.clientId,
           r.workerId,
+          r.serviceRequestId,
           r.score,
           r.comment ?? "",
           r.createdAt

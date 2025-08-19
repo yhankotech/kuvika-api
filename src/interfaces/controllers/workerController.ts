@@ -2,11 +2,11 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import {
   makeWorker
-} from '../factory/workerFactory';
-import { BadError, EmailAlreadyExist, ResourceNotFoundError } from '../../shared/errors/error';
-import { env } from '../../config/env';
+} from '@/interfaces/factory/workerFactory';
+import { AppError } from '@/shared/errors/error';
+import { env } from '@/config/env';
 import jwt from 'jsonwebtoken';
-import { SearchWorkersDTO } from "../dtos/workerDto";
+import { logger } from '@/shared/logs/winston';
 
 const createWorkerBodySchema = z.object({
   fullName: z.string().min(3, 'Nome muito curto'),
@@ -30,7 +30,7 @@ const updateWorkerBodySchema = z.object({
 
 const idSchema = z.object(
   {
-    id: z.string()
+    id: z.string().uuid()
   }
 )
 
@@ -41,31 +41,31 @@ const searchWorkerSchema = z.object({
 });
 
 export class WorkerController {
-  async login(req: Request, res: Response) {
+  async login(request: Request, response: Response) {
     try {
       const loginSchema = z.object({
         email: z.string().email(),
         password: z.string().min(6)
       });
 
-      const data = loginSchema.parse(req.body);
+      const data = loginSchema.parse(request.body);
 
       const service = makeWorker();
       const result = await service.execute(data);
 
-      return res.status(202).json(result);
+      return response.status(202).json(result);
     } catch (error) {
 
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: 'Erro de validação', details: error.errors });
+        return response.status(400).json({ error: 'Erro de validação', details: error.errors });
       }
 
-      throw new BadError("Alguma coisa deu errado na nossa parte!")
+      throw new AppError("Alguma coisa deu errado na nossa parte!", 400)
     }
   }
 
-   async logout(req: Request, res: Response): Promise<Response> {
-      const token = req.cookies.token
+   async logout(request: Request, response: Response): Promise<Response> {
+      const token = request.cookies.token
   
        if (token) {
         try {
@@ -78,18 +78,20 @@ export class WorkerController {
           await logoutService.getById(payload.sub)
   
         } catch (err) {
-          console.warn('Token inválido ao tentar fazer logout.')
+          if(err instanceof AppError){
+            response.status(400).json({message: 'Não foi possível fazer logout'})
+          }
         }
       }
   
       // Limpar o cookie
-      res.clearCookie('token', {
+      response.clearCookie('token', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
       })
   
-      return res.status(200).json({ message: 'Logout realizado com sucesso.' })
+      return response.status(200).json({ message: 'Logout realizado com sucesso.' })
     }
 
   async create(request: Request, response: Response) {
@@ -109,11 +111,11 @@ export class WorkerController {
         });
       }
       
-      if(error instanceof EmailAlreadyExist){
+      if(error instanceof AppError){
         return response.status(409).json({ error: "E-mail já cadastrado!" });
       }
-      
-      throw new BadError("Alguma coisa deu errado na nossa parte!")
+
+      return response.status(400).json({ error: "Alguma coisa aconteceu na nossa parte!" });
 
     }
   }
@@ -139,11 +141,11 @@ export class WorkerController {
       return response.status(200).json(worker);
 
     } catch (error) {
-        if(error instanceof ResourceNotFoundError){
-          return response.status(404).json({message:" Cliente não encontrado"});
-        }
-      
-        throw new BadError("Alguma coisa deu errado na nossa parte!")
+      if(error instanceof AppError){
+        return response.status(404).json({message:" Cliente não encontrado"});
+      }
+
+      return response.status(400).json({ error: "Alguma coisa aconteceu na nossa parte!" });
     }
   }
 
@@ -164,7 +166,7 @@ export class WorkerController {
         });
       }
 
-      throw new BadError("Alguma coisa deu errado na nossa parte!")
+      return response.status(400).json({ error: "Alguma coisa aconteceu na nossa parte!" });
     }
   }
 
@@ -177,57 +179,73 @@ export class WorkerController {
 
       return response.status(204).json({ message: 'Trabalhador deletado com sucesso' });
     } catch (error) {
-        if(error instanceof ResourceNotFoundError){
+        if(error instanceof AppError){
           return response.status(404).json({message:" Cliente não encontrado"});
         }
 
-        if(error instanceof BadError){
+        if(error instanceof AppError){
           return response.status(400).json({message: "Alguma coisa deu errado na nossa parte!"});
         }
     }
   }
 
-  async profile(req: Request, res: Response): Promise<Response> {
+  async profile(request: Request, response: Response): Promise<Response> {
       try {
-          const userId = req.user?.id;
-          const role = req.user?.role;
-    
-          if (!userId || !role) {
-            return res.status(401).json({ message: 'Não autenticado' });
-          }
+          const userIdSchema = z.object({userId : z.string().uuid()});
+
+          const { userId } = userIdSchema.parse(request.params)
       
           const service = makeWorker();
-          const profile = await service.getProfile(userId, role);
+
+          logger.info(userId, "está achegar aqui")
+
+          const profile = await service.getProfile(userId);
           
-          return res.json({ profile });
+          return response.json( profile );
 
       } catch (err) {
 
-        return res.status(404).json({ message: "Perfil não encontrado!" });
+        return response.status(404).json({ message: "Perfil não encontrado!" });
       }
     }
   
     async search(request: Request, response: Response) {
-    try {
-      const { location, minRating, serviceType } = searchWorkerSchema.parse(request.body)
-      
-      const service = makeWorker();
+      try {
+        const { location, minRating, serviceType } = searchWorkerSchema.parse(request.body)
+        
+        const service = makeWorker();
 
-      const result = await service.search({
-        location, 
-        minRating, 
-        serviceType
-      });
+        const result = await service.search(
+          location, 
+          serviceType,
+          minRating,
+        );
 
-      return response.json(result);
-    } catch (error) {
-        if(error instanceof ResourceNotFoundError){
+        return response.status(200).json(result);
+      } catch (error) {
+        if(error instanceof AppError){
             return response.status(404).json({message:" Trabalhador não encontrado"});
-          }
+        }
 
-          if(error instanceof BadError){
-            return response.status(400).json({message: "Alguma coisa deu errado na nossa parte!"});
-          }
+        if(error instanceof AppError){
+          return response.status(400).json({message: "Alguma coisa deu errado na nossa parte!"});
+        }
+      }
     }
-  }
+  async activate(req: Request, res: Response) {
+      try {
+        const activateSchema = z.object({
+          email: z.string().email(),
+          code: z.string().length(6)
+        });
+  
+        const validated = activateSchema.parse(req.body);
+        const service = makeWorker();
+  
+        await service.activate(validated);
+        return res.json({ message: "Conta ativada com sucesso!" });
+      } catch (err: any) {
+        return res.status(err.status || 500).json({ error: err.message });
+      }
+    }
 }
