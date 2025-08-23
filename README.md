@@ -79,3 +79,6 @@ Execute o seed:
 ```bash
 npx prisma db seed
 ```
+
+### **API em produção**
+https://kuvika-api.onrender.com
