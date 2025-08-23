@@ -1,6 +1,6 @@
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
-import {app} from "@/main";
+import {app} from "@/bootstrap/main";
 import { logger } from "@/shared/logs/winston";
 import { env } from "@/config/env";
 
@@ -24,7 +24,7 @@ export class SocketServer {
         this.setupListeners();
 
         this.httpServer.listen(env.PORT, () => {
-            logger.info('Servidor WebSocket rodando na porta:', env.PORT);
+            logger.info(`Servidor WebSocket rodando na porta: ${env.PORT}`);
         });
     }
 
