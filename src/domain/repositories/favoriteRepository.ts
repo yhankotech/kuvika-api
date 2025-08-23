@@ -1,4 +1,4 @@
-import { FavoriteDTO } from "@/interfaces/dtos/favoriteDto";
+import { FavoriteDTO } from "@/http/dtos/favoriteDto";
 import { Favorite } from "@/domain/entities/favorite";
 
 export interface FavoriteRepository {

@@ -2,7 +2,7 @@ import { prisma } from '@/infra/database/prisma';
 import { ServiceWithRelations } from "@/infra/database/typePrisma";
 import { ServiceRequestRepository } from "@/domain/repositories/serviceRepository";
 import { Service } from "@/domain/entities/service";
-import { ServiceRequestDTO } from "@/interfaces/dtos/serviceRequestDTO";
+import { ServiceRequestDTO } from "@/http/dtos/serviceRequestDTO";
 import { AppError } from "@/shared/errors/error";
 
 export class PrismaServiceRequestRepository implements ServiceRequestRepository {

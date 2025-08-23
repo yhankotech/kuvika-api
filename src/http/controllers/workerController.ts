@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import {
   makeWorker
-} from '@/interfaces/factory/workerFactory';
+} from '@/http/factory/workerFactory';
 import { AppError } from '@/shared/errors/error';
 import { env } from '@/config/env';
 import jwt from 'jsonwebtoken';

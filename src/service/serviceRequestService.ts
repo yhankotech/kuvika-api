@@ -1,5 +1,5 @@
 import { ServiceRequestRepository } from "@/domain/repositories/serviceRepository";
-import { ServiceRequestDTO } from "@/interfaces/dtos/serviceRequestDTO";
+import { ServiceRequestDTO } from "@/http/dtos/serviceRequestDTO";
 import { ClientRepository } from "@/domain/repositories/clientRepository"
 import { WorkerRepository } from "@/domain/repositories/workRepository"
 import { AppError } from "@/shared/errors/error";

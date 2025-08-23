@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { makeClientService } from "@/interfaces/factory/uplaodFactories";
+import { makeClientService } from "@/http/factory/uplaodFactories";
 import { AppError } from '@/shared/errors/error';
 import CloudinaryService from "@/service/cloudinaryService";
 import { generateHash } from "@/utils/generateHash";

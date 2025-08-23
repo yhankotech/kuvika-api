@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { ServiceRequestController } from "@/interfaces/controllers/serviceController";
+import { ServiceRequestController } from "@/http/controllers/serviceController";
 import { ensureAuthenticated } from "@/shared/middleware/authenticate";
 
 const serviceRoutes = Router();

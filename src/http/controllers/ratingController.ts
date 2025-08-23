@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import z from "zod";
-import { makeRatingService } from "@/interfaces/factory/ratingFactory";
+import { makeRatingService } from "@/http/factory/ratingFactory";
 import { AppError } from "@/shared/errors/error";
 
 const createRatingSchema = z.object({

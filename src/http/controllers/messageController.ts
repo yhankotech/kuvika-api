@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { makeMessageService } from "@/interfaces/factory/messagefactory";
+import { makeMessageService } from "@/http/factory/messagefactory";
 import { AppError } from "@/shared/errors/error";
 import { z } from "zod";
 

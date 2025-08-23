@@ -1,6 +1,6 @@
 import { Worker } from '@/domain/entities/worker';
 import { randomUUID } from 'crypto';
-import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO } from '@/interfaces/dtos/workerDto';
+import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO } from '@/http/dtos/workerDto';
 
 export class WorkerMapper {
   static toDomain(dto: CreateWorkerDTO, hashedPassword: string): Worker {

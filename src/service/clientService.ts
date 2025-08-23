@@ -6,7 +6,7 @@ import {
   ReturnClientDTO,
   LoginClientDTO,
   ActivateClientDTO
-} from '@/interfaces/dtos/clientDto';
+} from '@/http/dtos/clientDto';
 import {  sendActivationEmail } from "@/adapter/email/sendEmailCode";
 import { ClientRepository } from '@/domain/repositories/clientRepository';
 import { ClientMapper } from '@/infra/mappers/clientMapper';

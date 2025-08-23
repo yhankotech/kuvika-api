@@ -1,5 +1,5 @@
 import { Router, Request, Response, } from 'express';
-import { WorkerController } from '@/interfaces/controllers/workerController';
+import { WorkerController } from '@/http/controllers/workerController';
 import { ensureAuthenticated } from '@/shared/middleware/authenticate';
 
 const workerRoutes = Router();

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { FavoriteController } from '@/interfaces/controllers/favoriteController';
+import { FavoriteController } from '@/http/controllers/favoriteController';
 import {ensureAuthenticated} from "@/shared/middleware/authenticate";
 
 const favoriteRoutes = Router()

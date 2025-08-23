@@ -1,6 +1,6 @@
 import { prisma } from "@/infra/database/prisma";
 import { MessageRepository } from "@/domain/repositories/messageRespository";
-import { SendMessageDTO } from "@/interfaces/dtos/messageDto";
+import { SendMessageDTO } from "@/http/dtos/messageDto";
 import { MessageMapper } from "@/infra/mappers/messageMapper";
 import { AppError } from "@/shared/errors/error";
 

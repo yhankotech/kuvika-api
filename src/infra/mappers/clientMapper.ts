@@ -3,7 +3,7 @@ import {
   CreateClientDTO,
   UpdateClientDTO,
   ReturnClientDTO
-} from '@/interfaces/dtos/clientDto';
+} from '@/http/dtos/clientDto';
 import { randomUUID } from 'crypto';
 
 export class ClientMapper {
