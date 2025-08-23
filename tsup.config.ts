@@ -3,8 +3,8 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   entry: ["src/bootstrap/server.ts"],
   outDir: "dist",
-  format: ["cjs"], 
-  dts: true,
+  format: ["esm"], 
+  dts: false,
   clean: true,
   outExtension({ format }) {
     return { js: `.js` };
@@ -12,5 +12,5 @@ export default defineConfig({
   skipNodeModulesBundle: true,
   loader: {
     ".yaml": "file",
-  },
+  }
 });

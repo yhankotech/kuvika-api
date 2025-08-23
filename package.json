@@ -38,7 +38,7 @@
   },
   "scripts": {
     "server": "tsx watch ./src/bootstrap/server.ts",
-    "build": "tsup src --out-dir dist --format cjs --dts",
+    "build": "tsup",
     "dev": "tsx ./src/bootstrap/server.ts",
     "seed": "ts-node prisma/seed.ts",
     "start": "npx prisma generate && node dist/bootstrap/server.js"
