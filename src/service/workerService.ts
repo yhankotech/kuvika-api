@@ -1,4 +1,4 @@
-import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO, LoginDTO, ActivateWorkerDTO } from '@/interfaces/dtos/workerDto';
+import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO, LoginDTO, ActivateWorkerDTO } from '@/http/dtos/workerDto';
 import { WorkerRepository } from '@/domain/repositories/workRepository';
 import { WorkerMapper } from '@/infra/mappers/workerMapper';
 import  { hash } from 'bcryptjs';

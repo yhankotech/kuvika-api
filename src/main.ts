@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
-import { router } from "@/interfaces/routes/index"
+import { router } from "@/http/routes/index"
 import { swaggerSpec } from '@/config/swagger';
 import { errorHandler } from "@/shared/errors/errorHeandler";
 import { env } from '@/config/env';
@@ -16,7 +16,7 @@ app.use(cors({
     origin: env.API_ORIGINS,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
-    allowedHeaders:['Content-Type', 'Authorization', 'Origin']
+    allowedHeaders:['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());

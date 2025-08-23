@@ -1,5 +1,5 @@
 import { prisma } from '@/infra/database/prisma';
-import { RatingDTO } from "@/interfaces/dtos/ratingDto";
+import { RatingDTO } from "@/http/dtos/ratingDto";
 import { Rating } from "@/domain/entities/rating";
 import { RatingRepository } from "@/domain/repositories/ratingRepository";
 import { randomUUID } from "crypto";

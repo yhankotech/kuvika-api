@@ -1,23 +1,17 @@
 import { Router, Request, Response} from 'express';
 import { upload } from '@/adapter/multer/multer';
-import { UploadClientController } from '@/interfaces/controllers/uploadClientController';
+import { UploadWorkerController } from '@/http/controllers/uploadWorkerController';
 import { ensureAuthenticated } from '@/shared/middleware/authenticate';
 
-const uploadClientPhotoRoute = Router();
-const clientAvatarController = new UploadClientController()
+const uploadWorkerPhotoRoute = Router();
+const workkerAvatarController = new UploadWorkerController()
+
 
 /**
  * @swagger
- * tags:
- *   name: Avatar
- *   description: Gerenciamento de avatar do cliente
- */
-
-/**
- * @swagger
- * /api/v1/client/avatar:
+ * /api/v1/workers/avatar/{id}:
  *   post:
- *     summary: Fazer upload da foto de perfil do cliente
+ *     summary: Fazer upload da foto de perfil do trabalhador
  *     tags: [Avatar]
  *     consumes:
  *       - multipart/form-data
@@ -52,21 +46,22 @@ const clientAvatarController = new UploadClientController()
  *       400:
  *         description: Dados inválidos ou ausentes
  */
-uploadClientPhotoRoute.post('/avatar', upload.single('avatar'), ensureAuthenticated, (request: Request, response: Response) => {
-  clientAvatarController.uploadAvatar(request, response);
+uploadWorkerPhotoRoute.post('/avatar', upload.single('avatar'), ensureAuthenticated,(request: Request, response: Response) => {
+  workkerAvatarController.uploadAvatar(request, response);
 });
+
 
 /**
  * @swagger
- * /api/v1/client/avatar/{id}:
+ * /api/v1/worker/avatar/{id}:
  *   delete:
- *     summary: Excluir avatar do cliente
+ *     summary: Excluir avatar do trabalhador
  *     tags: [Avatar]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID do cliente
+ *         description: ID do trabalhador
  *         schema:
  *           type: string
  *     responses:
@@ -84,16 +79,15 @@ uploadClientPhotoRoute.post('/avatar', upload.single('avatar'), ensureAuthentica
  *         description: Usuário ou avatar não encontrado
  */
 
-uploadClientPhotoRoute.delete('/avatar/:id', ensureAuthenticated,(request: Request, response: Response) => {
-  clientAvatarController.deleteAvatar(request, response);
+uploadWorkerPhotoRoute.delete('/avatar/:id', ensureAuthenticated,(request: Request, response: Response) => {
+  workkerAvatarController.deleteAvatar(request, response);
 });
-
 
 /**
  * @swagger
- * /api/v1/client/avatar/{id}:
+ * /api/v1/workers/avatar/{id}:
  *   put:
- *     summary: Atualizar a foto de perfil do cliente
+ *     summary: Atualizar a foto de perfil do trabalhador
  *     tags: [Avatar]
  *     consumes:
  *       - multipart/form-data
@@ -101,7 +95,7 @@ uploadClientPhotoRoute.delete('/avatar/:id', ensureAuthenticated,(request: Reque
  *       - in: path
  *         name: id
  *         required: true
- *         description: ID do cliente
+ *         description: ID do trabalhador
  *         schema:
  *           type: string
  *     requestBody:
@@ -119,28 +113,19 @@ uploadClientPhotoRoute.delete('/avatar/:id', ensureAuthenticated,(request: Reque
  *     responses:
  *       200:
  *         description: Foto de perfil atualizada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Foto de perfil atualizada com sucesso!
- *                 user:
- *                   type: object
  *       400:
- *         description: Erro de validação ou dados ausentes
+ *         description: Dados inválidos ou ausentes
+ *       404:
+ *         description: Trabalhador não encontrado
  */
-uploadClientPhotoRoute.put(
+uploadWorkerPhotoRoute.put(
   '/avatar/:id',
   upload.single('avatar'),
   ensureAuthenticated,
   (request: Request, response: Response) => {
-    clientAvatarController.updateAvatar(request, response);
+    workkerAvatarController.updateAvatar(request, response);
   }
 );
 
 
-
-export { uploadClientPhotoRoute };
+export { uploadWorkerPhotoRoute };

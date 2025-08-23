@@ -1,6 +1,6 @@
 
 import { Router, Request, Response } from "express";
-import { MessageController } from "@/interfaces/controllers/messageController";
+import { MessageController } from "@/http/controllers/messageController";
 import { ensureAuthenticated } from "@/shared/middleware/authenticate";
 
 const messageRoutes = Router();

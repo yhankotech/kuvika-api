@@ -1,4 +1,4 @@
-import { ServiceRequestDTO } from "@/interfaces/dtos/serviceRequestDTO";
+import { ServiceRequestDTO } from "@/http/dtos/serviceRequestDTO";
 import { Service } from "@/domain/entities/service";
 import { ServiceWithRelations } from "@/infra/database/typePrisma";
 

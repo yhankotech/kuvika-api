@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { makeService } from '@/interfaces/factory/favoriteFactory';
+import { makeService } from '@/http/factory/favoriteFactory';
 import { AppError } from '@/shared/errors/error';
 import { z } from 'zod';
 

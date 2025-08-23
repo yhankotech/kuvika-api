@@ -3,7 +3,7 @@ import { ClientRepository } from "@/domain/repositories/clientRepository";
 import { WorkerRepository } from "@/domain/repositories/workRepository";
 import { Favorite } from "@/domain/entities/favorite";
 import { AppError } from "@/shared/errors/error";
-import { FavoriteDTO } from "@/interfaces/dtos/favoriteDto";
+import { FavoriteDTO } from "@/http/dtos/favoriteDto";
 
 export class FavoriteService {
   constructor(

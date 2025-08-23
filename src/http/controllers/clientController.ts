@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { makeClientService } from '@/interfaces/factory/clientFactory';
+import { makeClientService } from '@/http/factory/clientFactory';
 import { AppError } from '@/shared/errors/error';
 import { env } from '@/config/env';
 import jwt from 'jsonwebtoken';

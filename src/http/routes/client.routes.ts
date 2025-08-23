@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { ClientController } from '@/interfaces/controllers/clientController';
+import { ClientController } from '@/http/controllers/clientController';
 import { ensureAuthenticated } from "@/shared/middleware/authenticate";
 
 const clientRoutes = Router();

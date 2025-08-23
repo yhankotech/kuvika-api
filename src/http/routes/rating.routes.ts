@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { RatingController } from "@/interfaces/controllers/ratingController";
+import { RatingController } from "@/http/controllers/ratingController";
 import { ensureAuthenticated } from "@/shared/middleware/authenticate";
 
 const ratingRoutes = Router();

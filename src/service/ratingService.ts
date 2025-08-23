@@ -1,7 +1,7 @@
 import { RatingRepository} from "@/domain/repositories/ratingRepository";
 import { Rating } from "@/domain/entities/rating";
 import { AppError } from "@/shared/errors/error";
-import { RatingDTO } from "@/interfaces/dtos/ratingDto";
+import { RatingDTO } from "@/http/dtos/ratingDto";
 import { WorkerRepository } from "@/domain/repositories/workRepository";
 import {  sendRatingEmail } from "@/adapter/email/sendServiceEmail";
 

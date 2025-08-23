@@ -1,5 +1,5 @@
 import { Message } from "@/domain/entities/message";
-import { SendMessageDTO } from "@/interfaces/dtos/messageDto";
+import { SendMessageDTO } from "@/http/dtos/messageDto";
 
 export interface MessageRepository {
   send(data: SendMessageDTO): Promise<Message>;
