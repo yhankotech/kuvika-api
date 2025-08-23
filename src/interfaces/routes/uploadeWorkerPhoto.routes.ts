@@ -83,4 +83,49 @@ uploadWorkerPhotoRoute.delete('/avatar/:id', ensureAuthenticated,(request: Reque
   workkerAvatarController.deleteAvatar(request, response);
 });
 
+/**
+ * @swagger
+ * /api/v1/workers/avatar/{id}:
+ *   put:
+ *     summary: Atualizar a foto de perfil do trabalhador
+ *     tags: [Avatar]
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID do trabalhador
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - avatar
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Foto de perfil atualizada com sucesso
+ *       400:
+ *         description: Dados inválidos ou ausentes
+ *       404:
+ *         description: Trabalhador não encontrado
+ */
+uploadWorkerPhotoRoute.put(
+  '/avatar/:id',
+  upload.single('avatar'),
+  ensureAuthenticated,
+  (request: Request, response: Response) => {
+    workkerAvatarController.updateAvatar(request, response);
+  }
+);
+
+
 export { uploadWorkerPhotoRoute };
