@@ -1,16 +1,17 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/bootstrap/server.ts"],
+  entry: ["src/**/*.ts"], // pega todos os arquivos TS
   outDir: "dist",
-  format: ["esm"], 
+  format: ["esm"],
   dts: false,
   clean: true,
+  splitting: true, // permite múltiplos arquivos
   outExtension({ format }) {
     return { js: `.js` };
-  },  
+  },
   skipNodeModulesBundle: true,
   loader: {
     ".yaml": "file",
-  }
+  },
 });
