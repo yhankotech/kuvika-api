@@ -38,7 +38,7 @@
   },
   "scripts": {
     "server": "tsx watch ./src/bootstrap/server.ts",
-    "build": "tsup",
+    "build": "tsup src --out-dir dist",
     "dev": "tsx ./src/bootstrap/server.ts",
     "seed": "ts-node prisma/seed.ts",
     "start": "npx prisma generate && node dist/bootstrap/server.js"
@@ -46,6 +46,15 @@
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
   },
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yhankotech/kuvika-api.git"
+  },
+
+  "author": "Romeu Cajamba",
+  "license": "MIT",
+
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.9",
