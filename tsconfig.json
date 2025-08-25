@@ -9,8 +9,9 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "typeRoots": ["./src/@types", "./node_modules/@types"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "src/@types", "src/mf-infra"]
+  "include": ["src/**/*.ts", "src/@types/**/*.d.ts"],
+  "exclude": ["node_modules", "dist", "src/mf-infra"]
 }
