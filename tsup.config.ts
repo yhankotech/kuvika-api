@@ -10,7 +10,11 @@ export default defineConfig({
   skipNodeModulesBundle: true,
   sourcemap: true,
   minify: false,
-  external: ["@prisma/client"],
-  noExternal: ["winston"],
+  external: ["@prisma/client", "winston"],
   ignoreWatch: ["src/mf-infra", "src/@types"],
+  esbuildOptions(options) {
+    options.alias = {
+      "@": "./src",
+    };
+  },
 });
