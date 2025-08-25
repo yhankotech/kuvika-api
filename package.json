@@ -2,7 +2,7 @@
   "name": "kuvica-api",
   "version": "1.0.0",
   "description": "APi para rede para empregabilidade",
-  "main": "server.js",
+  "main": "server.cjs",
   "licence": "MIT",
   "type": "module",
   "engines": {
@@ -41,7 +41,7 @@
     "build": "tsup src --out-dir dist",
     "dev": "tsx ./src/bootstrap/server.ts",
     "seed": "ts-node prisma/seed.ts",
-    "start": "npx prisma generate && node dist/bootstrap/server.js"
+    "start": "npx prisma generate && node dist/bootstrap/server.cjs"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
