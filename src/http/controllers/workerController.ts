@@ -6,7 +6,7 @@ import {
 import { AppError } from '@/shared/errors/error';
 import { env } from '@/config/env';
 import jwt from 'jsonwebtoken';
-import { logger } from '@/shared/logs/winston';
+import { logger } from '@/shared/loggers/winston';
 
 const createWorkerBodySchema = z.object({
   fullName: z.string().min(3, 'Nome muito curto'),

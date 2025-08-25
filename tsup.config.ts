@@ -1,4 +1,3 @@
-// tsup.config.ts
 import { defineConfig } from "tsup";
 
 export default defineConfig({
@@ -10,7 +9,7 @@ export default defineConfig({
   skipNodeModulesBundle: true,
   sourcemap: true,
   minify: false,
-  external: ["@prisma/client", "winston"],
+  external: ["@prisma/client", "winston", "@/shared/logs/winston"],
   ignoreWatch: ["src/mf-infra", "src/@types"],
   esbuildOptions(options) {
     options.alias = {
