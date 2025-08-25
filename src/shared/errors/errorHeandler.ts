@@ -1,6 +1,6 @@
 import { ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
-import { logger } from "@/shared/logs/winston";
+import { logger } from "@/shared/loggers/winston";
 import { env } from '@/config/env';
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {

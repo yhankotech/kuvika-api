@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer'
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { env } from '@/config/env';
-import { logger } from '@/shared/logs/winston';
+import { logger } from '@/shared/loggers/winston';
 
 // Tipagem dos dados de envio
 interface SendMailParams {

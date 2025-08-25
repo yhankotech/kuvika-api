@@ -1,7 +1,7 @@
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import {app} from "@/bootstrap/main";
-import { logger } from "@/shared/logs/winston";
+import { logger } from "@/shared/loggers/winston";
 import { env } from "@/config/env";
 
 export class SocketServer {
