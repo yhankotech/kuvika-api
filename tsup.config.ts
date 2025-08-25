@@ -5,12 +5,12 @@ export default defineConfig({
   outDir: "dist",
   format: ["cjs"],
   clean: true,
-  dts: true,
+  dts: false,
   skipNodeModulesBundle: true,
   sourcemap: true,
   minify: false,
   external: ["@prisma/client", "winston", "@/shared/logs/winston"],
-  ignoreWatch: ["src/mf-infra", "src/@types"],
+  ignoreWatch: ["src/mf-infra"],
   esbuildOptions(options) {
     options.alias = {
       "@": "./src",
