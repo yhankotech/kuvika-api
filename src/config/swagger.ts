@@ -12,7 +12,7 @@ export const swaggerOptions = {
       description: 'Documentação da API da plataforma Kuvika',
     },
   },
-  apis: ['src/interfaces/routes/*.ts'],
+  apis: ['src/http/routes/*.ts'],
 };
 
 export const swaggerSpec = swaggerJSDoc(swaggerOptions);
