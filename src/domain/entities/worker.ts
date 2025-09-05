@@ -10,10 +10,16 @@ export class Worker {
     public location: string,
     public availability: string,
     public readonly createdAt: Date,
-    public avatar: string | undefined,
+    public avatar: string | null,
+    public neighborhood: string | null,
     public activationCode?: string | null,
     public isActive: boolean = false,
-  ) {}
+    public municipality?: string,
+    public profession?: string,
+    public experience?: number,
+    public birth_date?: Date,
+    public gender?: string,
+  ) {}     
 }
 
 export class WorkerSearch {
@@ -27,5 +33,6 @@ export class WorkerSearch {
     public readonly serviceTypes: string[],
     public readonly averageRating: number,
     public readonly description: string | null,
+
   ) {}
 }

@@ -21,10 +21,16 @@ model Worker {
   phoneNumber     String
   serviceTypes    String[]
   location        String
+  municipality    String?
+  neighborhood    String?
+  profession      String?
+  experience      Int?
   avatar          String?
   price           Float?
   availability    String
   activationCode String?
+  birth_date      DateTime?
+  gender          String?
   isActive       Boolean   @default(false)
   createdAt       DateTime @default(now())
 
