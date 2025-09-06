@@ -7,6 +7,12 @@ export interface CreateWorkerDTO {
   location: string;
   avatar?: string | undefined;
   availability: string;
+  municipality?: string;
+  neighborhood?: string;
+  profession?: string;
+  experience?: number;
+  birth_date?: Date;
+  gender?: string;
 }
 
 export interface UpdateWorkerDTO {
@@ -16,6 +22,12 @@ export interface UpdateWorkerDTO {
   location?: string;
   avatar?: string | undefined;
   availability?: string;
+  municipality?: string;
+  neighborhood?: string;
+  profession?: string;
+  experience?: number;
+  birth_date?: Date;
+  gender?: string;
 }
 
 export interface ReturnWorkerDTO {
@@ -25,7 +37,13 @@ export interface ReturnWorkerDTO {
   phoneNumber: string;
   serviceTypes: string[];
   location: string;
+  avatar?: string | undefined;
   availability: string;
+  municipality?: string;
+  neighborhood?: string;
+  profession?: string;
+  experience?: number;
+  gender?: string;
   createdAt: Date;
 }
 

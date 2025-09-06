@@ -106,13 +106,8 @@ workerRoutes.post('/login', (request: Request, response: Response) => {
 workerRoutes.post('/logout', ensureAuthenticated,(request: Request, response: Response) => {
   worker.logout(request, response);})
 
-
 /**
  * @swagger
- * tags:
- *   name: Workers
- *   description: Endpoints relacionados aos trabalhadores
- *
  * /api/v1/workers:
  *   post:
  *     summary: Cria um novo trabalhador
@@ -141,6 +136,9 @@ workerRoutes.post('/logout', ensureAuthenticated,(request: Request, response: Re
  *               password:
  *                 type: string
  *                 example: senha123
+ *               confirmPassword:
+ *                 type: string
+ *                 example: senha123
  *               phoneNumber:
  *                 type: string
  *                 example: '912345678'
@@ -148,22 +146,105 @@ workerRoutes.post('/logout', ensureAuthenticated,(request: Request, response: Re
  *                 type: array
  *                 items:
  *                   type: string
- *                 example: [ "eletricidade", "pintura" ]
+ *                 example: ["eletricidade", "pintura"]
  *               location:
  *                 type: string
  *                 example: Luanda - Viana
  *               availability:
  *                 type: string
  *                 example: Seg a Sex, das 08h às 17h
+ *               municipality:
+ *                 type: string
+ *                 example: Luanda
+ *               neighborhood:
+ *                 type: string
+ *                 example: Vila Alice
+ *               profession:
+ *                 type: string
+ *                 example: Eletricista
+ *               experience:
+ *                 type: integer
+ *                 example: 5
+ *               birth_date:
+ *                 type: string
+ *                 format: date
+ *                 example: 1990-05-20
+ *               gender:
+ *                 type: string
+ *                 enum: [Masculino, Feminino, Outro]
+ *                 example: Masculino
  *     responses:
  *       201:
  *         description: Trabalhador criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: 6f507f14-2f0d-4e6c-b2c9-e31cd511e7f2
+ *                 fullName:
+ *                   type: string
+ *                   example: João Silva
+ *                 email:
+ *                   type: string
+ *                   example: joao@example.com
+ *                 phoneNumber:
+ *                   type: string
+ *                   example: '912345678'
+ *                 serviceTypes:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["eletricidade", "pintura"]
+ *                 location:
+ *                   type: string
+ *                   example: Luanda - Viana
+ *                 availability:
+ *                   type: string
+ *                   example: Seg a Sex, das 08h às 17h
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: 2025-09-05T14:45:00.000Z
+ *                 avatar:
+ *                   type: string
+ *                   nullable: true
+ *                   example: https://example.com/avatar.jpg
+ *                 neighborhood:
+ *                   type: string
+ *                   nullable: true
+ *                   example: Vila Alice
+ *                 activationCode:
+ *                   type: string
+ *                   example: "93485"
+ *                 isActive:
+ *                   type: boolean
+ *                   example: false
+ *                 municipality:
+ *                   type: string
+ *                   example: Luanda
+ *                 profession:
+ *                   type: string
+ *                   example: Eletricista
+ *                 experience:
+ *                   type: integer
+ *                   example: 5
+ *                 birth_date:
+ *                   type: string
+ *                   format: date
+ *                   example: 1990-05-20
+ *                 gender:
+ *                   type: string
+ *                   enum: [Masculino, Feminino, Outro]
+ *                   example: Masculino
  *       400:
  *         description: Requisição inválida
+ *       409:
+ *         description: Trabalhador já cadastrado com esse e-mail
  */
 
-
-// Passa como callback anônimo para manter tipagem correta
 workerRoutes.post('/', (request: Request, response: Response) => {
   worker.create(request, response,);
 });
@@ -234,8 +315,6 @@ workerRoutes.get('/:id', ensureAuthenticated,(request: Request, response: Respon
  *                 type: string
  *               email:
  *                 type: string
- *               password:
- *                 type: string
  *               phoneNumber:
  *                 type: string
  *               serviceTypes:
@@ -246,11 +325,25 @@ workerRoutes.get('/:id', ensureAuthenticated,(request: Request, response: Respon
  *                 type: string
  *               availability:
  *                 type: string
+ *               municipality:
+ *                 type: string
+ *               neighborhood:
+ *                 type: string
+ *               profession:
+ *                 type: string
+ *               experience:
+ *                 type: integer
+ *               birth_date:
+ *                 type: string
+ *                 format: date
+ *               gender:
+ *                 type: string
+ *                 enum: [Masculino, Feminino, Outro]
  *     responses:
- *       202:
+ *       200:
  *         description: Trabalhador atualizado com sucesso
  *       400:
- *         description: Erro de validação ou atualização
+ *         description: Erro de atualização
  *       404:
  *         description: Trabalhador não encontrado
  */

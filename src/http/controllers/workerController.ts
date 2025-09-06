@@ -14,18 +14,34 @@ const createWorkerBodySchema = z.object({
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
   phoneNumber: z.string().min(7, 'Número de telefone inválido'),
   serviceTypes: z.array(z.string()).min(1, 'Informe pelo menos um serviço'),
+  confirmPassword: z.string().min(6, 'Confirmação de senha deve ter pelo menos 6 caracteres'),
   location: z.string().min(3, 'Localização obrigatória'),
-  availability: z.string().min(1, 'Disponibilidade obrigatória')
+  availability: z.string().min(1, 'Disponibilidade obrigatória'),
+  municipality: z.string().optional(),
+  neighborhood: z.string().optional(),
+  profession: z.string().optional(),
+  experience: z.number().int().nonnegative().optional(),
+  birth_date: z.coerce.date().optional(),
+  gender: z.enum(['Masculino', 'Feminino', 'Outro']).optional(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'As senhas não conferem',
+  path: ['confirmPassword'],
 });
 
 const updateWorkerBodySchema = z.object({
   fullName: z.string().optional(),
   email: z.string().email('Email inválido').optional(),
-  password: z.string().min(6).optional(),
   phoneNumber: z.string().optional(),
   serviceTypes: z.array(z.string()).optional(),
   location: z.string().optional(),
-  availability: z.string().optional()
+  availability: z.string().optional(),
+  avatar: z.string().optional(),
+  municipality: z.string().optional(),
+  neighborhood: z.string().optional(),
+  profession: z.string().optional(),
+  experience: z.number().int().nonnegative().optional(),
+  birth_date: z.coerce.date().optional(),
+  gender: z.enum(['Masculino', 'Feminino', 'Outro']).optional(),
 });
 
 const idSchema = z.object(
@@ -71,8 +87,6 @@ export class WorkerController {
         try {
           const payload = jwt.verify(token, env.JWT_SECRET!) as { sub: string, role: string }
   
-          console.log(`Usuário com ID ${payload.sub} (${payload.role}) fez logout.`)
-  
           // Aqui você poderia passar o ID do usuário para o serviço
           const logoutService = makeWorker();
           await logoutService.getById(payload.sub)
@@ -99,9 +113,9 @@ export class WorkerController {
       const body = createWorkerBodySchema.parse(request.body);
 
       const service = makeWorker();
-      await service.create(body);
+      const worker = await service.create(body);
 
-      return response.status(201).json({ message: 'Trabalhador criado com sucesso' });
+      return response.status(201).json(worker);
     } catch (error) {
 
       if (error instanceof z.ZodError) {
