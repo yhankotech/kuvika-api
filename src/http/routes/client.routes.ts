@@ -116,6 +116,8 @@ clientRoutes.post('/login', (request: Request, response: Response) => {
  *                 type: string
  *               password:
  *                 type: string
+ *               confirmPassword:
+ *                 type: string
  *               phone:
  *                 type: string
  *               location:
@@ -123,6 +125,30 @@ clientRoutes.post('/login', (request: Request, response: Response) => {
  *     responses:
  *       201:
  *         description: Client created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: 6f507f14-2f0d-4e6c-b2c9-e31cd511e7f2
+ *                 fullName:
+ *                   type: string
+ *                   example: João Silva
+ *                 email:
+ *                   type: string
+ *                   example: joao@example.com
+ *                 phone:
+ *                   type: string
+ *                   example: '912345678'
+ *                 location:
+ *                   type: string
+ *                   example: Luanda - Viana
+ *       400:
+ *         description: Requisição inválida
+ *       409:
+ *         description: Cliente já cadastrado com esse e-mail
  */
 clientRoutes.post('/', (request: Request, response: Response) => {
   client.create(request, response,);

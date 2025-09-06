@@ -9,9 +9,13 @@ const createClientSchema = z.object({
   fullName: z.string().min(3, 'Nome muito curto'),
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
+  confirmPassword: z.string().min(6, 'Confirmação de senha deve ter pelo menos 6 caracteres'),
   phone: z.string().min(7, 'Número de telefone inválido'),
   location: z.string().min(3, 'Localização obrigatória'),
   avatar: z.string().optional()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'As senhas não conferem',
+  path: ['confirmPassword'],
 });
 
 const updateClientSchema = z.object({
