@@ -95,4 +95,11 @@ export class PrismaClientRepository implements ClientRepository {
       data: { isActive, activationCode: null },
     });
   }
+
+  async updatePassword(id: string, newPassword: string): Promise<void> {
+    await this.connect.client.update({
+      where: { id },
+      data: { password: newPassword }
+    });
+  }
 }

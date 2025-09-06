@@ -2,7 +2,6 @@ import { prisma } from '@/infra/database/prisma';
 import { WorkerRepository } from '@/domain/repositories/workRepository';
 import { Worker, WorkerSearch } from '@/domain/entities/worker';
 import { AppError } from '@/shared/errors/error';
-import { r } from '@faker-js/faker/dist/airline-CLphikKp';
 
 export class PrismaWorkerRepository implements WorkerRepository {
   private connect = prisma;

@@ -127,7 +127,7 @@ export class WorkerService {
     return updated;
   }
 
-  async delete(id: string): Promise<void> {
+  async delete({ id }: { id: string }): Promise<void> {
     await this.workerRepository.delete(id);
   }
 

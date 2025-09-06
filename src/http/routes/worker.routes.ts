@@ -459,12 +459,12 @@ workerRoutes.post('/search', ensureAuthenticated, async (request: Request, respo
 
 /**
  * @swagger
- * /activate:
+ * /api/v1/workers/activate:
  *   post:
- *     summary: Ativa a conta de um cliente
- *     description: Recebe o email e o código de ativação enviados por email para confirmar a conta do cliente.
+ *     summary: Ativa a conta de um trabalhador
+ *     description: Recebe o email e o código de ativação enviados por email para confirmar a conta do trabalhador.
  *     tags:
- *       - Client
+ *       - Worker
  *     requestBody:
  *       required: true
  *       content:

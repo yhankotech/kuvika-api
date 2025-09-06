@@ -185,10 +185,9 @@ export class WorkerController {
 
   async delete(request: Request, response: Response) {
     try {
-      const { id } = idSchema.parse(request.params);
 
       const service = makeWorker();
-      await service.delete(id);
+      await service.delete({ id: request.user.id });
 
       return response.status(204).json({ message: 'Trabalhador deletado com sucesso' });
     } catch (error) {
