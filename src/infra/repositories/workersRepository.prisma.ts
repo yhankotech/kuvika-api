@@ -285,4 +285,11 @@ export class PrismaWorkerRepository implements WorkerRepository {
       data: { isActive, activationCode: null },
     });
   }
+
+  async updatePassword(id: string, newPassword: string): Promise<void> {
+    await this.connect.worker.update({
+      where: { id },
+      data: { password: newPassword }
+    });
+  }
 }

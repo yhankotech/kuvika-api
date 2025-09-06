@@ -165,11 +165,10 @@ export class WorkerController {
 
   async update(request: Request, response: Response) {
     try {
-      const { id } = idSchema.parse(request.params);
       const body = updateWorkerBodySchema.parse(request.body);
 
       const service = makeWorker();
-      const updated = await service.update(id, body);
+      const updated = await service.update({ id: request.user.id, dto: body });
 
       return response.status(200).json({ message: 'Trabalhador atualizado com sucesso', updated });
     } catch (error) {
@@ -204,24 +203,19 @@ export class WorkerController {
   }
 
   async profile(request: Request, response: Response): Promise<Response> {
-      try {
-          const userIdSchema = z.object({userId : z.string().uuid()});
-
-          const { userId } = userIdSchema.parse(request.params)
+    try {
       
-          const service = makeWorker();
+      const service = makeWorker();
 
-          logger.info(userId, "está achegar aqui")
-
-          const profile = await service.getProfile(userId);
+      const profile = await service.getProfile(request.user.id);
           
-          return response.json( profile );
+      return response.json( profile );
 
-      } catch (err) {
+    } catch (err) {
 
-        return response.status(404).json({ message: "Perfil não encontrado!" });
-      }
+      return response.status(404).json({ message: "Perfil não encontrado!" });
     }
+  }
   
     async search(request: Request, response: Response) {
       try {
@@ -247,19 +241,42 @@ export class WorkerController {
       }
     }
   async activate(req: Request, res: Response) {
-      try {
-        const activateSchema = z.object({
-          email: z.string().email(),
-          code: z.string().length(6)
-        });
+    try {
+      const activateSchema = z.object({
+        email: z.string().email(),
+        code: z.string().length(6)
+      });
   
-        const validated = activateSchema.parse(req.body);
-        const service = makeWorker();
+      const validated = activateSchema.parse(req.body);
+      const service = makeWorker();
   
-        await service.activate(validated);
-        return res.json({ message: "Conta ativada com sucesso!" });
-      } catch (err: any) {
-        return res.status(err.status || 500).json({ error: err.message });
-      }
+      await service.activate(validated);
+      return res.json({ message: "Conta ativada com sucesso!" });
+    } catch (err: any) {
+      return res.status(err.status || 500).json({ error: err.message });
     }
+  }
+
+  async updatePassword(req: Request, res: Response) {
+    const updatePasswordSchema = z.object({
+      email: z.string().email("E-mail inválido"),
+      currentPassword: z.string().min(6, "A senha atual deve ter no mínimo 6 caracteres"),
+      newPassword: z.string().min(6, "A nova senha deve ter no mínimo 6 caracteres"),
+      confirmPassword: z.string().min(6, "A confirmação deve ter no mínimo 6 caracteres"),
+    }).refine((data) => data.newPassword === data.confirmPassword, {
+      message: "A nova senha e a confirmação devem ser iguais",
+      path: ["confirmPassword"],
+    });
+    try {
+      const { email, currentPassword, newPassword } = updatePasswordSchema.parse(req.body);
+
+      const service = makeWorker();
+
+      await service.updatePassword({ email, currentPassword, newPassword, user_id: req.user.id });
+
+      return res.status(204).send();
+    } catch (error) {
+      return res.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
+    }
+  }
 }
