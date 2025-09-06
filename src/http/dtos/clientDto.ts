@@ -44,3 +44,10 @@ export interface ActivateClientDTO {
   email: string;
   code: string;
 }
+
+export interface UpdatePasswordDTO {
+  email: string;
+  currentPassword: string;
+  newPassword: string;
+  user_id: string;
+}

@@ -2,7 +2,6 @@ import { prisma } from '@/infra/database/prisma';
 import { WorkerRepository } from '@/domain/repositories/workRepository';
 import { Worker, WorkerSearch } from '@/domain/entities/worker';
 import { AppError } from '@/shared/errors/error';
-import { r } from '@faker-js/faker/dist/airline-CLphikKp';
 
 export class PrismaWorkerRepository implements WorkerRepository {
   private connect = prisma;
@@ -283,6 +282,13 @@ export class PrismaWorkerRepository implements WorkerRepository {
     await prisma.worker.update({
       where: { id: workerId },
       data: { isActive, activationCode: null },
+    });
+  }
+
+  async updatePassword(id: string, newPassword: string): Promise<void> {
+    await this.connect.worker.update({
+      where: { id },
+      data: { password: newPassword }
     });
   }
 }

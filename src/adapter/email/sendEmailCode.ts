@@ -14,7 +14,7 @@ export const sendActivationEmail = async ({
   name,
   code,
 }: ActivationEmailOptions): Promise<{ success: boolean; data: unknown }> => {
-  const activationLink = `https://kuvika.com/activate?code=${encodeURIComponent(code)}`;
+  const activationLink = `https://https://kuvica-webapp.vercel.app/activate`;
 
   const html = `
     Olá <b>${name}</b>,

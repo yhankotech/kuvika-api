@@ -1,10 +1,11 @@
-import { CreateWorkerDTO, ReturnWorkerDTO, UpdateWorkerDTO, LoginDTO, ActivateWorkerDTO } from '@/http/dtos/workerDto';
+import { CreateWorkerDTO, UpdateWorkerDTO, LoginDTO, ActivateWorkerDTO, UpdatePasswordDTO } from '@/http/dtos/workerDto';
 import { WorkerRepository } from '@/domain/repositories/workRepository';
 import  { hash } from 'bcryptjs';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AppError } from '@/shared/errors/error';
 import {  sendActivationEmail } from "@/adapter/email/sendEmailCode";
+import { sendPasswordChangedEmail } from "@/adapter/email/updatePasswordEmail";
 import { env } from '@/config/env';
 import { RatingRepository } from "@/domain/repositories/ratingRepository";
 import { randomUUID } from 'crypto';
@@ -37,7 +38,9 @@ export class WorkerService {
     );
     
     return {
-      token
+      token,
+      ...worker,
+      password: undefined
     };
   }
 
@@ -77,7 +80,10 @@ export class WorkerService {
       code
     });
 
-    return saved;
+    return { 
+      ...saved,
+      password: undefined
+    };
   }
 
   async getAll() {
@@ -106,7 +112,7 @@ export class WorkerService {
     return worker;
   }
 
-  async update(id: string, dto: UpdateWorkerDTO) {
+  async update({ id, dto }: { id: string; dto: UpdateWorkerDTO }) {
     const existing = await this.workerRepository.getById(id);
 
     if (!existing)  throw new AppError("Trabalhador não encontrado !", 404)
@@ -121,7 +127,7 @@ export class WorkerService {
     return updated;
   }
 
-  async delete(id: string): Promise<void> {
+  async delete({ id }: { id: string }): Promise<void> {
     await this.workerRepository.delete(id);
   }
 
@@ -160,5 +166,27 @@ export class WorkerService {
 
     await this.workerRepository.updateActivation(worker.id, true);
   }
-  
+
+  async updatePassword(dto: UpdatePasswordDTO) {
+    const user = await this.workerRepository.getById(dto.user_id);
+
+    if (!user) throw new AppError("Usuário não encontrado!", 404);
+
+    const worker = await this.workerRepository.findByEmail(dto.email);
+
+    if (!worker) throw new AppError("Trabalhador não encontrado!", 404);
+
+    const passwordMatch = await bcrypt.compare(dto.currentPassword, worker.password);
+    if (!passwordMatch) throw new AppError("Palavra-passe atual incorreta!", 401);
+
+    const hashed = await hash(dto.newPassword, 10);
+
+    await this.workerRepository.updatePassword(worker.id, hashed);
+
+    await sendPasswordChangedEmail({
+      to: worker.email,
+      name: worker.fullName,
+    });
+  }
+
 }

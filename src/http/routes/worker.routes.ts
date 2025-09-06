@@ -293,7 +293,7 @@ workerRoutes.get('/:id', ensureAuthenticated,(request: Request, response: Respon
 
 /**
  * @swagger
- * /api/v1/workers/{id}:
+ * /api/v1/workers/update-information:
  *   patch:
  *     summary: Atualiza um trabalhador existente
  *     tags: [Workers]
@@ -347,7 +347,7 @@ workerRoutes.get('/:id', ensureAuthenticated,(request: Request, response: Respon
  *       404:
  *         description: Trabalhador não encontrado
  */
-workerRoutes.patch('/:id', ensureAuthenticated,(request: Request, response: Response) => {
+workerRoutes.patch('/update-information', ensureAuthenticated,(request: Request, response: Response) => {
   worker.update(request, response);
 });
 
@@ -376,7 +376,7 @@ workerRoutes.delete('/:id', ensureAuthenticated,(request: Request, response: Res
 
 /**
  * @swagger
- * /api/v1/workers/me/{userId}:
+ * /api/v1/workers/me:
  *   get:
  *     summary: Retorna o perfil do usuário autenticado
  *     tags: [Perfil]
@@ -391,7 +391,7 @@ workerRoutes.delete('/:id', ensureAuthenticated,(request: Request, response: Res
  *         description: Usuário não encontrado
  */
 
-workerRoutes.get('/me/:userId', ensureAuthenticated, (request: Request, response: Response) => {
+workerRoutes.get('/me', ensureAuthenticated, (request: Request, response: Response) => {
   worker.profile(request, response);
 });
 
@@ -459,12 +459,12 @@ workerRoutes.post('/search', ensureAuthenticated, async (request: Request, respo
 
 /**
  * @swagger
- * /activate:
+ * /api/v1/workers/activate:
  *   post:
- *     summary: Ativa a conta de um cliente
- *     description: Recebe o email e o código de ativação enviados por email para confirmar a conta do cliente.
+ *     summary: Ativa a conta de um trabalhador
+ *     description: Recebe o email e o código de ativação enviados por email para confirmar a conta do trabalhador.
  *     tags:
- *       - Client
+ *       - Worker
  *     requestBody:
  *       required: true
  *       content:
@@ -518,5 +518,48 @@ workerRoutes.post("/activate", (request: Request, response: Response) => {
   worker.activate(request, response);
 });
 
+/**
+ * @swagger
+ * /api/v1/workers/update-password:
+ *   patch:
+ *     summary: Atualiza a palavra-passe do trabalhador
+ *     tags: [Workers]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - currentPassword
+ *               - newPassword
+ *               - confirmPassword
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: joao@example.com
+ *               currentPassword:
+ *                 type: string
+ *                 example: senha123
+ *               newPassword:
+ *                 type: string
+ *                 example: novaSenha456
+ *               confirmPassword:
+ *                 type: string
+ *                 example: novaSenha456
+ *     responses:
+ *       204:
+ *         description: Palavra-passe atualizada com sucesso
+ *       400:
+ *         description: Nova palavra-passe e confirmação não coincidem
+ *       401:
+ *         description: Palavra-passe atual incorreta
+ *       404:
+ *         description: Trabalhador não encontrado
+ */
+workerRoutes.patch("/update-password", ensureAuthenticated, (request: Request, response: Response) => {
+  worker.updatePassword(request, response);
+});
 
 export { workerRoutes };

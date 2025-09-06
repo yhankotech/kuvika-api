@@ -9,4 +9,5 @@ export interface ClientRepository {
   delete(id: string): Promise<void>;
   getProfile (id: string): Promise<Client>
   updateActivation(clientId: string, isActive: boolean): Promise<void>
+  updatePassword(id: string, newPassword: string): Promise<void>;
 }

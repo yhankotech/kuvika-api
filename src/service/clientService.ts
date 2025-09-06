@@ -5,7 +5,8 @@ import {
   GetClientByIdDTO,
   ReturnClientDTO,
   LoginClientDTO,
-  ActivateClientDTO
+  ActivateClientDTO,
+  UpdatePasswordDTO
 } from '@/http/dtos/clientDto';
 import {  sendActivationEmail } from "@/adapter/email/sendEmailCode";
 import { ClientRepository } from '@/domain/repositories/clientRepository';
@@ -15,6 +16,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { env } from '@/config/env';
 import { AppError } from '@/shared/errors/error';
+import { sendPasswordChangedEmail } from "@/adapter/email/updatePasswordEmail";
 
 export class ClientService {
   constructor(private readonly clientRepository: ClientRepository) {}
@@ -46,10 +48,12 @@ export class ClientService {
 
     return {
       token,
+      ...client,
+      password: undefined
     };
   }
 
-  async create(dto: CreateClientDTO): Promise<void> {
+  async create(dto: CreateClientDTO) {
     const hashedPassword = await hash(dto.password, 10);
 
     const client_by_email = await this.clientRepository.getByEmail(dto.email);
@@ -74,6 +78,11 @@ export class ClientService {
       name: userClient.fullName,
       code,
     });
+
+    return  {
+      ...userClient,
+      password: undefined
+    }
   }
 
   async getAll(): Promise<ReturnClientDTO[] | null> {
@@ -123,7 +132,7 @@ export class ClientService {
     await this.clientRepository.delete(dto.id);
   }
 
-  async getProfile(userId: string,) {
+  async getProfile({ userId }: { userId: string }) {
     const user = await this.clientRepository.getById(userId);
 
     if(!user) throw new AppError("Perfil não encontrado !", 404);
@@ -133,6 +142,7 @@ export class ClientService {
 
   async activate(dto: ActivateClientDTO): Promise<void> {
     const client = await this.clientRepository.getByEmail(dto.email);
+    
     if (!client) throw new AppError("Cliente não encontrado!", 404);
 
     if (client.activationCode !== dto.code) {
@@ -140,5 +150,28 @@ export class ClientService {
     }
 
     await this.clientRepository.updateActivation(client.id, true);
+  }
+
+  async updatePassword(dto: UpdatePasswordDTO) {
+    const user = await this.clientRepository.getById(dto.user_id);
+  
+    if (!user) throw new AppError("Usuário não encontrado!", 404);
+  
+    const client = await this.clientRepository.getByEmail(dto.email);
+  
+    if (!client) throw new AppError("Cliente não encontrado!", 404);
+  
+    const passwordMatch = await bcrypt.compare(dto.currentPassword, client.password);
+
+    if (!passwordMatch) throw new AppError("Palavra-passe atual incorreta!", 401);
+  
+    const hashed = await hash(dto.newPassword, 10);
+  
+    await this.clientRepository.updatePassword(client.id, hashed);
+  
+    await sendPasswordChangedEmail({
+      to: client.email,
+      name: client.fullName,
+    });
   }
 }

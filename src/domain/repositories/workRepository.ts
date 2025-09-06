@@ -10,4 +10,5 @@ export interface WorkerRepository {
   getProfile (id: string): Promise<Worker>
   searchWorkers( location?: string, serviceType?: string, minRating?: number): Promise<WorkerSearch[] | null>;
   updateActivation(clientId: string, isActive: boolean): Promise<void>
+  updatePassword(id: string, newPassword: string): Promise<void>;
 }

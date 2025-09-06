@@ -170,13 +170,12 @@ export class ClientController {
 
   async update(request: Request, response: Response) {
     try {
-      const { id } = idSchema.parse(request.params);
 
       const body = updateClientSchema.parse(request.body);
 
       const service = makeClientService();
 
-      const updated = await service.update(id, body);
+      const updated = await service.update(request.user.id, body);
 
       if(!updated) return response.status(404).json({ message: "Usuário não encontrado!" });
 
@@ -196,18 +195,16 @@ export class ClientController {
 
   async delete(request: Request, response: Response) {
     try {
-      const { id } = idSchema.parse(request.params);
 
       const service = makeClientService();
 
-      await service.delete({id});
+      await service.delete({id:request.user.id});
 
       return response.status(200).json({ message: 'Cliente deletado com sucesso' });
 
     } catch (error) {
-      
-      if(error instanceof AppError){
-        return response.status(404).json({message:" Cliente não encontrado"});
+      if (error instanceof AppError) {
+        return response.status(404).json({ message: "Cliente não encontrado" });
       }
 
       if(error instanceof AppError){
@@ -219,22 +216,20 @@ export class ClientController {
 
   async profile(request: Request, response: Response): Promise<Response> {
     try {
-          const userIdSchema = z.object({userId : z.string().uuid()});
-
-          const { userId } = userIdSchema.parse(request.params)
         
-          const service = makeClientService();
+      const service = makeClientService();
 
-          const profile = await service.getProfile(userId);
+      const profile = await service.getProfile({ userId: request.user.id });
 
-          if(!profile) return response.status(404).json({ message: "Perfil não encontrado!" });
+      if(!profile) return response.status(404).json({ message: "Perfil não encontrado!" });
             
-          return response.json({ profile });
+      return response.json({ profile });
   
-        } catch (err) {
-          throw new AppError("Alguma coisa aconteceu da nossa parte!", 400)
-        }
+    } catch (err) {
+      throw new AppError("Alguma coisa aconteceu da nossa parte!", 400)
       }
+  }
+
   async activate(req: Request, res: Response) {
     try {
       const activateSchema = z.object({
@@ -251,4 +246,27 @@ export class ClientController {
       return res.status(err.status || 500).json({ error: err.message });
     }
   }
+
+  async updatePassword(req: Request, res: Response) {
+    const updatePasswordSchema = z.object({
+        email: z.string().email("E-mail inválido"),
+        currentPassword: z.string().min(6, "A senha atual deve ter no mínimo 6 caracteres"),
+        newPassword: z.string().min(6, "A nova senha deve ter no mínimo 6 caracteres"),
+        confirmPassword: z.string().min(6, "A confirmação deve ter no mínimo 6 caracteres"),
+    }).refine((data) => data.newPassword === data.confirmPassword, {
+        message: "A nova senha e a confirmação devem ser iguais",
+        path: ["confirmPassword"],
+    });
+      try {
+        const { email, currentPassword, newPassword } = updatePasswordSchema.parse(req.body);
+  
+        const service = makeClientService();
+  
+        await service.updatePassword({ email, currentPassword, newPassword, user_id: req.user.id });
+  
+        return res.status(204).send();
+      } catch (error) {
+        return res.status(400).json({ error: "Alguma coisa deu errado na nossa parte!" });
+      }
+    }
 }

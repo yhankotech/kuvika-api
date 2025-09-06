@@ -160,7 +160,7 @@ clientRoutes.get('/', ensureAuthenticated, (request: Request, response: Response
  *       404:
  *         description: Client not found
  */
-clientRoutes.get('/:id', ensureAuthenticated, (request: Request, response: Response) => {
+clientRoutes.get('/:id', (request: Request, response: Response) => {
   client.getById(request, response,);
 });
 
@@ -199,16 +199,10 @@ clientRoutes.get('/email', ensureAuthenticated,(request: Request, response: Resp
 
 /**
  * @swagger
- * /api/v1/clients/{id}:
+ * /api/v1/clients:
  *   patch:
  *     summary: Update a client
  *     tags: [Clients]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -230,33 +224,27 @@ clientRoutes.get('/email', ensureAuthenticated,(request: Request, response: Resp
  *       200:
  *         description: Client updated
  */
-clientRoutes.patch('/:id', ensureAuthenticated, (request: Request, response: Response) => {
+clientRoutes.patch('/', ensureAuthenticated, (request: Request, response: Response) => {
   client.update(request, response,);
 });
 
 /**
  * @swagger
- * /api/v1/clients/{id}:
+ * /api/v1/clients:
  *   delete:
  *     summary: Delete a client
  *     tags: [Clients]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
  *     responses:
  *       204:
  *         description: Client deleted
  */
-clientRoutes.delete('/:id', ensureAuthenticated, (request: Request, response: Response) => {
+clientRoutes.delete('/', ensureAuthenticated, (request: Request, response: Response) => {
   client.delete(request, response,);
 });
 
 /**
  * @swagger
- * /api/v1/clients/me/{userId}:
+ * /api/v1/clients/me:
  *   get:
  *     summary: Retorna o perfil do usuário autenticado
  *     tags: [Perfil]
@@ -271,7 +259,7 @@ clientRoutes.delete('/:id', ensureAuthenticated, (request: Request, response: Re
  *         description: Usuário não encontrado
  */
 
-clientRoutes.get('/me/:userId', ensureAuthenticated, (request: Request, response: Response) => {
+clientRoutes.get('/me', ensureAuthenticated, (request: Request, response: Response) => {
   client.profile(request, response,);
 });
 
@@ -296,7 +284,7 @@ clientRoutes.get('/logout', ensureAuthenticated, (request: Request, response: Re
 
 /**
  * @swagger
- * /activate:
+ * /api/v1/clients/clients/activate:
  *   post:
  *     summary: Ativa a conta de um cliente
  *     description: Recebe o email e o código de ativação enviados por email para confirmar a conta do cliente.
@@ -353,6 +341,50 @@ clientRoutes.get('/logout', ensureAuthenticated, (request: Request, response: Re
 
 clientRoutes.post("/activate", (request: Request, response: Response) => {
   client.activate(request, response);
+});
+
+/**
+ * @swagger
+ * /api/v1/clients/update-password:
+ *   patch:
+ *     summary: Atualiza a palavra-passe do Cliente
+ *     tags: [Clients]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - currentPassword
+ *               - newPassword
+ *               - confirmPassword
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: joao@example.com
+ *               currentPassword:
+ *                 type: string
+ *                 example: senha123
+ *               newPassword:
+ *                 type: string
+ *                 example: novaSenha456
+ *               confirmPassword:
+ *                 type: string
+ *                 example: novaSenha456
+ *     responses:
+ *       204:
+ *         description: Palavra-passe atualizada com sucesso
+ *       400:
+ *         description: Nova palavra-passe e confirmação não coincidem
+ *       401:
+ *         description: Palavra-passe atual incorreta
+ *       404:
+ *         description: Trabalhador não encontrado
+ */
+clientRoutes.patch("/update-password", ensureAuthenticated, (request: Request, response: Response) => {
+  client.updatePassword(request, response);
 });
 
 export { clientRoutes };
