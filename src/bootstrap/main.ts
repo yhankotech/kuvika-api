@@ -11,7 +11,7 @@ export const app = express();
 
 // Lista de origens permitidas
 // Lê e separa as origens permitidas
-const allowedOrigins = process.env.API_ORIGINS?.split(',') || [];
+const allowedOrigins = env.API_ORIGINS?.split(',') || [];
 
 // Configuração CORS
 const corsOptions = {
