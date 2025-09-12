@@ -9,15 +9,28 @@ import { env } from '@/config/env';
 
 export const app = express();
 
-// Ativa o CORS para todas as origens
-app.use(cors());
+// Lista de origens permitidas
+// Lê e separa as origens permitidas
+const allowedOrigins = env.API_ORIGINS?.split(',') || [];
 
-app.use(cors({
-    origin: env.API_ORIGINS,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    credentials: true,
-    allowedHeaders:['Content-Type', 'Authorization']
-}));
+// Configuração CORS
+const corsOptions = {
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    // Permite requisições sem origem (como do Postman) ou de origens válidas
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log(`CORS bloqueado para origem: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+// Ativa o CORS para todas as origens
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser())
