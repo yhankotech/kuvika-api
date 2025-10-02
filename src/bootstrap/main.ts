@@ -17,7 +17,7 @@ const allowedOrigins = env.API_ORIGINS?.split(',') || [];
 const corsOptions = {
   origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
     // Permite requisições sem origem (como do Postman) ou de origens válidas
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
       callback(null, true);
     } else {
       console.log(`CORS bloqueado para origem: ${origin}`);
