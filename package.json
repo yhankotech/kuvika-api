@@ -43,7 +43,7 @@
     "dev": "tsx ./src/bootstrap/server.ts",
     "seed": "ts-node prisma/seed.ts",
     "start": "npx prisma generate && node dist/bootstrap/server.js",
-    "sentry:sourcemaps": "sentry-cli sourcemaps upload ./dist"
+    "sentry:sourcemaps": "sentry-cli sourcemaps upload ./dist --org yhankotech --project node-express"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
