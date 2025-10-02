@@ -43,7 +43,8 @@
     "dev": "tsx ./src/bootstrap/server.ts",
     "seed": "ts-node prisma/seed.ts",
     "start": "npx prisma generate && node dist/bootstrap/server.js",
-    "sentry:sourcemaps": "sentry-cli sourcemaps upload ./dist --org yhankotech --project node-express"
+    "sentry:sourcemaps": "SENTRY_RELEASE=kuvica-api@1.0.0 sentry-cli releases files kuvica-api@1.0.0 upload-sourcemaps ./dist --org yhankotech --project node-express --rewrite"
+
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
