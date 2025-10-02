@@ -19,7 +19,8 @@ const schemaEnv = z.object({
     API_ORIGINS: z.string(),
     CLOUDINARY_CLOUD_NAME: z.string(),
     CLOUDINARY_API_KEY: z.string(),
-    CLOUDINARY_API_SECRET: z.string()
+    CLOUDINARY_API_SECRET: z.string(),
+    SENTRY_HTTP: z.string()
 })
 
 const _env = schemaEnv.safeParse(process.env)

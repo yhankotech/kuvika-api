@@ -1,3 +1,5 @@
+import '../config/observability/sentry/instrument';
+import * as Sentry from "@sentry/node";
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
@@ -37,5 +39,7 @@ app.use(cookieParser())
 app.use(router);
 // Swagger disponível em /docs
 app.use(env.API_PUBLIC_URL, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+Sentry.setupExpressErrorHandler(app);
 
 app.use(errorHandler);
